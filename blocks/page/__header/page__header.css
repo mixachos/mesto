@@ -1,0 +1,15 @@
+.page__header {
+  box-sizing: border-box;
+}
+
+@media (min-width: 425px) {
+  .page__header {
+    padding: 45px 0 40px;
+  }
+}
+
+@media (max-width: 424px) {
+  .page__header {
+    padding: 28px 0 32px;
+  }
+}

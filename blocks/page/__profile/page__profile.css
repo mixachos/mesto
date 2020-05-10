@@ -1,0 +1,17 @@
+@media (min-width: 920px) {
+  .profile {
+    margin: 38px 0 51px;
+  }
+}
+
+@media (min-width: 715px) and (max-width: 919px) {
+  .profile {
+    margin: 38px auto 51px;
+  }
+}
+
+@media (max-width: 714px) {
+  .profile {
+    margin: 38px auto 0;
+  }
+}
