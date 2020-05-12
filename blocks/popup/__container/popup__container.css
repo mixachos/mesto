@@ -1,4 +1,6 @@
 .popup__container {
+  width: 430px;
+  padding: 36px;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
@@ -6,18 +8,9 @@
   box-sizing: border-box;
 }
 
-@media (min-width: 551px) {
-  .popup__container {
-    width: 430px;
-    height: 330px;
-    padding: 36px;
-  }
-}
-
 @media (max-width: 550px) {
   .popup__container {
-    width: 282px;
-    height: 330px;
+    width: 230px;
     padding: 20px;
   }
 }

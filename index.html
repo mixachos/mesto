@@ -13,7 +13,9 @@
   <div class="page">
 
     <header class="header page__header">
-      <div class="header__logo"></div>
+      <a href="#" class="header__link">
+        <img src="./images/logo/logo-mesto.svg" alt="Логотип Mesto Russia" class="header__logo">
+      </a>
     </header>
 
     <main class="content">
@@ -22,11 +24,11 @@
         <div class="profile__main-info">
           <div class="profile__title">
             <h1 class="profile__name">Жак-Ив Кусто</h1>
-            <button class="profile__edit-button"></button>
+            <button class="profile__edit-button" type="button"></button>
           </div>
           <p class="profile__job">Исследователь океана</p>
         </div>
-        <button class="profile__add-button"></button>
+        <button class="profile__add-button" type="button"></button>
       </section>
 
       <section class="cards">
@@ -34,42 +36,42 @@
           <li class="cards__item">
             <img src="./images/cards/karachaevsk.jpg" alt="Крепость в Карачаево-Черкесии" class="cards__image">
             <div class="cards__caption">
-              <p class="cards__caption-text">Карачаево-Черкесия</p>
-              <button class="cards__like-button"></button>
+              <h3 class="cards__caption-text">Карачаево-Черкесия</h3>
+              <button class="cards__like-button" type="button"></button>
             </div>
           </li>
           <li class="cards__item">
             <img src="./images/cards/elbrus.jpg" alt="Гора Эльбрус" class="cards__image">
             <div class="cards__caption">
-              <p class="cards__caption-text">Гора Эльбрус</p>
+              <h3 class="cards__caption-text">Гора Эльбрус</h3>
               <button class="cards__like-button"></button>
             </div>
           </li>
           <li class="cards__item">
             <img src="./images/cards/dombai.jpg" alt="Домбай" class="cards__image">
             <div class="cards__caption">
-              <p class="cards__caption-text">Домбай</p>
+              <h3 class="cards__caption-text">Домбай</h3>
               <button class="cards__like-button"></button>
             </div>
           </li>
           <li class="cards__item">
             <img src="./images/cards/river.jpg" alt="Река Лена" class="cards__image">
             <div class="cards__caption">
-              <p class="cards__caption-text">Река Лена</p>
+              <h3 class="cards__caption-text">Река Лена</h3>
               <button class="cards__like-button"></button>
             </div>
           </li>
           <li class="cards__item">
             <img src="./images/cards/rock.jpg" alt="Байкал зимой" class="cards__image">
             <div class="cards__caption">
-              <p class="cards__caption-text">Озеро Байкал</p>
+              <h3 class="cards__caption-text">Озеро Байкал</h3>
               <button class="cards__like-button"></button>
             </div>
           </li>
           <li class="cards__item">
             <img src="./images/cards/sea.jpg" alt="Чёрное море" class="cards__image">
             <div class="cards__caption">
-              <p class="cards__caption-text">Чёрное море</p>
+              <h3 class="cards__caption-text">Чёрное море</h3>
               <button class="cards__like-button"></button>
             </div>
           </li>
@@ -83,13 +85,13 @@
   </div>
 
   <div class="popup">
-    <form action="#" class="popup__container">
+    <form name="edit-profile" action="#" class="popup__container" method="POST">
       <h4 class="popup__form-name">Редактировать профиль</h4>
-      <input type="text" class="popup__input-name">
-      <input type="text" class="popup__input-job">
+      <input type="text" class="popup__input popup__input_type_name" placeholder="Ваше имя" required>
+      <input type="text" class="popup__input popup__input_type_job" placeholder="Чем занимаетесь?" required>
       <button class="popup__save-button" type="submit">Сохранить</button>
     </form>
-    <button class="popup__close-button"></button>
+    <button class="popup__close-button" type="button"></button>
   </div>
 
   <script src="./scripts/script.js"></script>

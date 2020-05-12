@@ -1,27 +1,20 @@
 .footer__copyright {
   font-size: 18px;
   line-height: 22px;
+  margin: 0;
   color: #545454;
-  padding: 0;
-}
-
-@media (min-width: 920px) {
-  .footer__copyright {
-    width: 100%;
-    margin: 0 auto;
-  }
 }
 
 @media (min-width: 425px) and (max-width: 919px) {
   .footer__copyright {
-    max-width: 90%;
-    margin: 0 auto;
+    margin: 0 0 0 5vw;
   }
 }
 
 @media (max-width: 425px) {
   .footer__copyright {
-    max-width: 100%;
+    font-size: 14px;
+    line-height: 17px;
     margin: 0 0 0 19px;
   }
 }

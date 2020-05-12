@@ -1,0 +1,9 @@
+@import url('./_type/popup__input_type_name.css');
+@import url('./_type/popup__input_type_job.css');
+
+.popup__input {
+  font-size: 14px;
+  line-height: 30px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
+}

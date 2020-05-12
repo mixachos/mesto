@@ -13,8 +13,8 @@ const jobElement = profileElement.querySelector('.profile__job');
 //--Элементы формы
 const closeButton = popupElement.querySelector('.popup__close-button');
 const saveButton = popupElement.querySelector('.popup__save-button');
-const nameInput = popupElement.querySelector('.popup__input-name');
-const jobInput = popupElement.querySelector('.popup__input-job');
+const nameInput = popupElement.querySelector('.popup__input_type_name');
+const jobInput = popupElement.querySelector('.popup__input_type_job');
 //--
 
 //--Инициализация формы, считываем значения со страницы
@@ -30,6 +30,8 @@ function formSubmitHandler (evt) {
 
   nameElement.textContent = nameInput.value;
   jobElement.textContent = jobInput.value;
+
+  popupOpenClose();
 }
 //--
 

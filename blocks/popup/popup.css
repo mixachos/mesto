@@ -2,8 +2,7 @@
 @import url('./__container/popup__container.css');
 @import url('./__form-name/popup__form-name.css');
 @import url('./__save-button/popup__save-button.css');
-@import url('./__input-job/popup__input-job.css');
-@import url('./__input-name/popup__input-name.css');
+@import url('./__input/popup__input.css');
 
 .popup {
   position: fixed;
