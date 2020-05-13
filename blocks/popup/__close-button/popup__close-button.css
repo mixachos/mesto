@@ -6,7 +6,8 @@
   background-repeat: no-repeat;
   background-position: center;
   position: absolute;
-  transform: translate(230px, -180px);
+  left: calc(50% + 205px);
+  top: calc(50% - 210px);
   border: none;
   outline: none;
 }
@@ -19,10 +20,7 @@
 
 @media (max-width: 550px) {
   .popup__close-button {
-    transform: translate(130px, -180px);
+    left: calc(50% + 80px);
+    top: calc(50% - 215px);
   }
 }
-
-/*Не понял про координаты по 2 осям. Сделал ненулевое положение по Х для маленьких разрешений.
-Или нужно саму кнопку поместить в форму и задать положение относительно формы, например,
-по top и right?*/
