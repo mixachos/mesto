@@ -3,4 +3,5 @@
 @import url('./__image/cards__image.css');
 @import url('./__item/cards__item.css');
 @import url('./__like-button/cards__like-button.css');
+@import url('./__delete-button/cards__delete-button.css');
 @import url('./__list/cards__list.css');

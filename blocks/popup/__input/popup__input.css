@@ -1,9 +1,22 @@
 @import url('./_type/popup__input_type_name.css');
 @import url('./_type/popup__input_type_job.css');
+@import url('./_type/popup__input_type_title.css');
+@import url('./_type/popup__input_type_link.css');
 
 .popup__input {
   font-size: 14px;
   line-height: 30px;
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, .2);
+}
+
+::placeholder {
+  color: #c4c4c4;
+}
+
+@media (max-width: 550px) {
+  .popup__input {
+    font-size: 12px;
+    line-height: 30px;
+  }
 }

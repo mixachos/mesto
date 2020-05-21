@@ -3,6 +3,9 @@
 @import url('./__form-name/popup__form-name.css');
 @import url('./__save-button/popup__save-button.css');
 @import url('./__input/popup__input.css');
+@import url('./__view-container/popup__view-container.css');
+@import url('./__image/popup__image.css');
+@import url('./__image-caption/popup__image-caption.css');
 
 .popup {
   position: fixed;
@@ -14,6 +17,9 @@
   height: 100%;
   background-color: rgba(0, 0, 0, .5);
   z-index: 1;
-  display: none;
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility .5s, opacity .5s ease-in-out;
 }
 

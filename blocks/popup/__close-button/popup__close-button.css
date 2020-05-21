@@ -6,8 +6,8 @@
   background-repeat: no-repeat;
   background-position: center;
   position: absolute;
-  left: calc(50% + 205px);
-  top: calc(50% - 210px);
+  right: -47px;
+  top: -47px;
   border: none;
   outline: none;
 }
@@ -18,9 +18,8 @@
   cursor: pointer;
 }
 
-@media (max-width: 550px) {
+/*@media (max-width: 550px) {
   .popup__close-button {
-    left: calc(50% + 80px);
-    top: calc(50% - 215px);
+    left: 230px;
   }
-}
+}*/
