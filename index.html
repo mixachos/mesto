@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Интерактивная страница, куда можно добавлять фотографии, удалять их и ставить лайки" />
   <link rel="stylesheet" href="./pages/index.css">
   <title>Mesto Russia</title>
 </head>
@@ -33,18 +35,22 @@
 
       <section class="cards">
         <ul class="cards__list">
-          <template id="card-template">
-            <li class="cards__item">
-              <img class="cards__image">
-              <div class="cards__caption">
-                <h3 class="cards__caption-text"></h3>
-                <button class="cards__like-button" type="button" aria-label="Нравится"></button>
-              </div>
-              <button class="cards__delete-button" type="button" aria-label="Удалить"></button>
-            </li>
-          </template>
+          <!--Здесь размещаются карточки по шаблону #1-->
         </ul>
       </section>
+
+      <!--Шаблон #1 карточки-->
+      <template id="card-template">
+        <li class="cards__item">
+          <img class="cards__image">
+          <div class="cards__caption">
+            <h3 class="cards__caption-text"></h3>
+            <button class="cards__like-button" type="button" aria-label="Нравится"></button>
+          </div>
+          <button class="cards__delete-button" type="button" aria-label="Удалить"></button>
+        </li>
+      </template>
+
     </main>
 
     <footer class="footer page__footer">
