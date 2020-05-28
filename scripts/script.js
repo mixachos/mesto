@@ -74,10 +74,7 @@ const cardTemplate = document.querySelector('#card-template').content;  //сод
 //--Инициализация страницы. Заполнить карточки по шаблону, беря данные из массива
 function initPage() {
   initialCards.forEach(item => {
-    const cardItem = cardTemplate.cloneNode(true);
-
-    addCardContent(item.link, item.name, item.alt, cardItem);
-    cardsList.append(cardItem);  //добавили карточку в конец контейнера (списка)
+    renderCard(item, 'ARRAY');
   });
 }
 //--
@@ -95,18 +92,19 @@ function initPopupView(evt) {
   const captionElement = popupElementView.querySelector('.popup__image-caption');
 
   imageElement.src = evt.target.getAttribute('src');
+
   captionElement.textContent = evt.target.parentElement.querySelector('.cards__caption-text').textContent;
 }
 //--
 
 //--Записываем значения из формы edit на страницу
-function formSubmitHandler(evt) {
+function editProfile(evt) {
   evt.preventDefault();
 
   nameElement.textContent = nameInput.value;
   jobElement.textContent = jobInput.value;
 
-  popupOpenClose(evt);
+  popupOpenClose(popupElementEdit);
 }
 //--
 
@@ -120,60 +118,40 @@ function escPressed(popup) {
 }
 //--
 
-//--Управляем видимостью формы, при открытии - инициализация
-function popupOpenClose(evt) {
+//--Управляем видимостью формы
+function popupOpenClose(popup) {
+  popup.classList.toggle('popup_opened');
+  popup.closest('.root').addEventListener('keydown', escPressed(popup));
+}
+//--
 
-  const popupType = evt.target.parentElement.parentElement; //определяем попап, в котором нажата кнопка
-  const clickedButton = evt.target  //определяем, какая кнопка нажата
+//--Добавляем карточку на страницу
+function renderCard(item, flag) {
+  const cardItem = cardTemplate.cloneNode(true);
+  cardItem.querySelector('.cards__image').src = item.link;
+  cardItem.querySelector('.cards__caption-text').textContent = item.name;
+  cardItem.querySelector('.cards__image').alt = item.alt;
 
-  //определяем, на форме какого попапа произошёл submit
-  const isPopupEditSave = clickedButton.parentElement.classList.contains('popup_type_edit');
-  const isPopupAddSave = clickedButton.parentElement.classList.contains('popup_type_add');
+  //навешиваем слушатели на кнопки
+  cardItem.querySelector('.cards__like-button').addEventListener('click', function (evt) {
+    evt.target.classList.toggle('cards__like-button_active');
+  });
 
-  //определяем попап для закрытия (второе условие в if)
-  const isPopupEdit = popupType.classList.contains('popup_type_edit');
-  const isPopupAdd = popupType.classList.contains('popup_type_add');
-  const isPopupView = popupType.classList.contains('popup_type_view');
+  cardItem.querySelector('.cards__delete-button').addEventListener('click', function (evt) {
+    evt.target.closest('.cards__item').remove();
+  });
 
-  //определяем открытость попапа (для инициализации). add не смотрим, т.к. в него не считываются данные со страницы
-  const isPopupEditOpened = popupElementEdit.classList.contains('popup_opened');
-  const isPopupViewOpened = popupElementView.classList.contains('popup_opened');
+  cardItem.querySelector('.cards__image').addEventListener('click', (evt) => {
+    initPopupView(evt);
+    popupOpenClose(popupElementView);
+  });
 
-  //определяем состояние конкретной кнопки
-  const isEditButton = clickedButton.classList.contains('profile__edit-button');
-  const isAddButton = clickedButton.classList.contains('profile__add-button');
-  const isImageButton = clickedButton.classList.contains('cards__image');
-
-  //инициализация, открытие и закрытие формы edit
-  if (isEditButton || isPopupEdit || isPopupEditSave) {
-    if (!isPopupEditOpened) {
-      initPopupEdit();
-    }
-    popupElementEdit.classList.toggle('popup_opened');
-
-    popupElementEdit.parentElement.addEventListener('keydown', function () {escPressed(popupElementEdit)});
-
+  //проверяем откуда вызвана функция, вставляем карточку в начало или в конец списка
+  if (flag === 'ARRAY') {
+    cardsList.append(cardItem);
   }
-
-  //открытие и закрытие формы add
-  if (isAddButton || isPopupAdd || isPopupAddSave) {
-    popupElementAdd.classList.toggle('popup_opened');
-
-    popupElementAdd.parentElement.addEventListener('keydown', function () {escPressed(popupElementAdd)});
-
-    titleInput.value = '';
-    linkInput.value = '';
-  }
-
-  //инициализация, открытие и закрытие формы view
-  if (isImageButton || isPopupView) {
-
-    if (!isPopupViewOpened) {
-      initPopupView(evt); //evt передаём, чтобы знать, на какой картинке щёлкнули
-    }
-    popupElementView.classList.toggle('popup_opened');
-
-    popupElementView.parentElement.addEventListener('keydown', function () {escPressed(popupElementView)});
+  if (flag === 'FORM') {
+    cardsList.prepend(cardItem);
   }
 }
 //--
@@ -182,44 +160,35 @@ function popupOpenClose(evt) {
 function addCard(evt) {
   evt.preventDefault();
 
-  const cardItem = cardTemplate.cloneNode(true); //клонируем содержимое шаблона
+  const item = {
+    name: `${titleInput.value}`,
+    link: `${linkInput.value}`,
+    alt: `Фото ${titleInput.value}`
+  };
 
-  addCardContent(linkInput.value, titleInput.value, `Фото ${titleInput.value}`, cardItem); //передаём аргументами данные из формы и разметку из шаблона
-  cardsList.prepend(cardItem);  //добавляем новую карточку в начало списка
-  popupOpenClose(evt);
-}
-//--
-
-//--Общая add, для формы добавления и инициализации страницы
-function addCardContent(source, caption, alt, card) {
-
-  card.querySelector('.cards__image').src = source; //картинке карточки присваиваем в атрибут src значение, переданное через source
-  card.querySelector('.cards__caption-text').textContent = caption;   //заполняем содержимое надписи
-  card.querySelector('.cards__image').alt = alt;
-
-  //Навешиваем слушатели кнопкам лайк, удалить и открыть просмотр при щелчке по картинке
-  card.querySelector('.cards__like-button').addEventListener('click', function (evt) {
-    evt.target.classList.toggle('cards__like-button_active');
-  });
-
-  card.querySelector('.cards__delete-button').addEventListener('click', function (evt) {
-    evt.target.parentElement.remove();
-  });
-
-  card.querySelector('.cards__image').addEventListener('click', popupOpenClose);
+  renderCard(item, 'FORM');
+  popupOpenClose(popupElementAdd);
 }
 //--
 
 initPage(); //Инициализация страницы, загрузка карточек из массива
 
 //--Обрабатываем нажатия по кнопкам
-editButton.addEventListener('click', popupOpenClose);
-addButton.addEventListener('click', popupOpenClose);
+editButton.addEventListener('click', () => {
+  initPopupEdit();
+  popupOpenClose(popupElementEdit);
+});
+addButton.addEventListener('click', () => {
+  titleInput.value = '';
+  linkInput.value = '';
 
-closeButtonEdit.addEventListener('click', popupOpenClose);
-closeButtonAdd.addEventListener('click', popupOpenClose);
-closeButtonView.addEventListener('click', popupOpenClose);
+  popupOpenClose(popupElementAdd);
+});
+
+closeButtonEdit.addEventListener('click', () => { popupOpenClose(popupElementEdit); });
+closeButtonAdd.addEventListener('click', () => { popupOpenClose(popupElementAdd) });
+closeButtonView.addEventListener('click', () => { popupOpenClose(popupElementView) });
 
 popupElementAdd.addEventListener('submit', addCard); //обработка submit с формы предотвращает отправку пустой формы, поэтому клики на кнопках меняем на submit формы
-popupElementEdit.addEventListener('submit', formSubmitHandler);
+popupElementEdit.addEventListener('submit', editProfile);
 //--
