@@ -1,0 +1,16 @@
+.popup__save-button_inactive {
+  height: 50px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  outline: none;
+  opacity: .2;
+}
+
+.popup__save-button_inactive:hover {
+  background-color: inherit;
+  cursor: default;
+}
