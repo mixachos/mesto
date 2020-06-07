@@ -1,15 +1,9 @@
-@import url('./_type/popup__input_type_name.css');
-@import url('./_type/popup__input_type_job.css');
-@import url('./_type/popup__input_type_title.css');
-@import url('./_type/popup__input_type_link.css');
-@import url('./_type/popup__input_type_error.css');
-
 .popup__input {
   font-size: 14px;
   line-height: 17px;
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, .2);
-  padding: 13px 0 13px 5px;
+  padding: 10px 0 10px 5px;
   box-sizing: border-box;
 }
 
