@@ -16,7 +16,7 @@ function isValid(formElement, inputElement, options) {
   } else {
     hideInputError(formElement, inputElement, options);
   }
-};
+}
 //--
 
 //--Показываем стандартное сообщение об ошибке ввода и подсвечиваем само поле
@@ -25,7 +25,7 @@ function showInputError(formElement, inputElement, errorMessage, options) {
   inputElement.classList.add(options.inputErrorClass);
   errorElement.textContent = errorMessage;
   errorElement.classList.add(options.errorClass);
-};
+}
 //--
 
 //--Прячем ошибку
@@ -34,7 +34,7 @@ function hideInputError(formElement, inputElement, options) {
   inputElement.classList.remove(options.inputErrorClass);
   errorElement.classList.remove(options.errorClass);
   errorElement.textContent = '';
-};
+}
 //--
 
 //--Навешиваем слушатель на каждое поле ввода
@@ -49,7 +49,7 @@ function setEventListeners(formElement, options) {
       toggleButtonState(inputList, buttonElement, options);
     });
   });
-};
+}
 //--
 
 //--Инициализация валидации
@@ -61,15 +61,15 @@ function enableValidation(options) {
     });
     setEventListeners(formElement, options);
   });
-};
+}
 //--
 
 //--Проверяем есть ли в форме хотя бы одно невалидное поле
 function hasInvalidInput(inputList) {
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
-  })
-};
+  });
+}
 //--
 
 //--Переключаем состояние кнопки в зависимости от валидности полей
@@ -81,7 +81,7 @@ function toggleButtonState(inputList, buttonElement, options) {
     buttonElement.removeAttribute('disabled');
     buttonElement.classList.remove(options.inactiveButtonClass);
   }
-};
+}
 //--
 
 enableValidation(objectOptionsForValidation);

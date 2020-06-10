@@ -49,21 +49,18 @@ const jobElement = profileElement.querySelector('.profile__job');
 
 //--Элементы формы edit
 const closeButtonEdit = popupElementEdit.querySelector('.popup__close-button');
-const saveButtonEdit = popupElementEdit.querySelector('.popup__save-button');
 const nameInput = popupElementEdit.querySelector('.popup__input_type_name');
 const jobInput = popupElementEdit.querySelector('.popup__input_type_job');
 //--
 
 //--Элементы формы add
 const closeButtonAdd = popupElementAdd.querySelector('.popup__close-button');
-const saveButtonAdd = popupElementAdd.querySelector('.popup__save-button');
 const titleInput = popupElementAdd.querySelector('.popup__input_type_title');
 const linkInput = popupElementAdd.querySelector('.popup__input_type_link');
 //--
 
 //--Элементы формы view
 const closeButtonView = popupElementView.querySelector('.popup__close-button');
-const captionElement = popupElementView.querySelector('.popup__image-caption');
 //--
 
 //--Шаблон карточки
@@ -109,12 +106,13 @@ function editProfile(evt) {
 //--
 
 //--Обработка нажатия esc, закрытие попапа
-function escPressed(popup) {
-  document.addEventListener('keydown', (evt) => {
-    if (evt.key === 'Escape') {
-      popup.classList.remove('popup_opened');
-    }
-  });
+function popupCloseOnEsc(evt) {
+  if (evt.key === 'Escape') {
+    const popup = document.querySelector('.popup_opened');
+    popup.classList.remove('popup_opened');
+
+    document.removeEventListener('keydown', popupCloseOnEsc);
+  }
 }
 //--
 
@@ -133,8 +131,7 @@ function setPopupEventListeners() {
 //--
 
 //--Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
-function clearInputError(popup) {
-  const isPopupOpened = popup.classList.contains('popup_opened');
+function clearInputError(popup, isPopupOpened) {
 
   //при открытии кнопка "save" неактивна, т.к. нет никаких изменений и нечего сохранять. Исключён из обработки попап с просмотром картинки
   const isPopupView = popup.classList.contains('popup_type_view');
@@ -162,10 +159,15 @@ function clearInputError(popup) {
 
 //--Управляем видимостью формы
 function popupOpenClose(popup) {
-  clearInputError(popup);
+  const isPopupOpened = popup.classList.contains('popup_opened'); //при открытии - false
 
-  popup.classList.toggle('popup_opened');
-  popup.closest('.root').addEventListener('keydown', escPressed(popup));
+  clearInputError(popup, isPopupOpened);  //очистили ошибки
+
+  popup.classList.toggle('popup_opened'); //поменяли состояние попапа
+
+  if (!isPopupOpened) {
+    document.addEventListener('keydown', popupCloseOnEsc);  //если попап открыт, обрабатывать нажатие клавиш
+  }
 }
 //--
 
@@ -190,9 +192,11 @@ function setCardEventListeners(card) {
 //--Добавляем карточку на страницу
 function renderCard(item, flag) {
   const cardItem = cardTemplate.cloneNode(true);
-  cardItem.querySelector('.cards__image').src = item.link;
+  const cardImage = cardItem.querySelector('.cards__image');
+
+  cardImage.src = item.link;
   cardItem.querySelector('.cards__caption-text').textContent = item.name;
-  cardItem.querySelector('.cards__image').alt = item.alt;
+  cardImage.alt = item.alt;
 
   setCardEventListeners(cardItem);
 
@@ -237,7 +241,7 @@ addButton.addEventListener('click', () => {
   popupOpenClose(popupElementAdd);
 });
 
-closeButtonEdit.addEventListener('click', () => { popupOpenClose(popupElementEdit); });
+closeButtonEdit.addEventListener('click', () => { popupOpenClose(popupElementEdit) });
 closeButtonAdd.addEventListener('click', () => { popupOpenClose(popupElementAdd) });
 closeButtonView.addEventListener('click', () => { popupOpenClose(popupElementView) });
 
