@@ -75,8 +75,7 @@ function hasInvalidInput(inputList) {
 //--Переключаем состояние кнопки в зависимости от валидности полей
 function toggleButtonState(inputList, buttonElement, options) {
   if (hasInvalidInput(inputList)) {
-    buttonElement.setAttribute('disabled', true);
-    buttonElement.classList.add(options.inactiveButtonClass);
+    disableSaveButton(buttonElement, options);
   } else {
     buttonElement.removeAttribute('disabled');
     buttonElement.classList.remove(options.inactiveButtonClass);
@@ -84,4 +83,29 @@ function toggleButtonState(inputList, buttonElement, options) {
 }
 //--
 
-enableValidation(objectOptionsForValidation);
+//--Делаем кнопку "save" неактивной
+function disableSaveButton(buttonElement, options) {
+  buttonElement.setAttribute('disabled', true);
+  buttonElement.classList.add(options.inactiveButtonClass);
+}
+//--
+
+//--Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
+function clearInputError(popup, isPopupOpened) {
+
+  //при открытии кнопка "save" неактивна, т.к. нет никаких изменений и нечего сохранять. Исключён из обработки попап с просмотром картинки
+  const isPopupView = popup.classList.contains('popup_type_view');
+  if (!isPopupView) {
+    const buttonElement = popup.querySelector(objectOptionsForValidation.submitButtonSelector);
+    disableSaveButton(buttonElement, objectOptionsForValidation);
+  }
+  //
+
+  if (!isPopupOpened) {
+    const inputList = Array.from(popup.querySelectorAll(objectOptionsForValidation.inputSelector));
+    inputList.forEach((inputElement) => {
+      hideInputError(popup, inputElement, objectOptionsForValidation);
+    });
+  }
+}
+//--

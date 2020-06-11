@@ -110,8 +110,6 @@ function popupCloseOnEsc(evt) {
   if (evt.key === 'Escape') {
     const popup = document.querySelector('.popup_opened');
     popup.classList.remove('popup_opened');
-
-    document.removeEventListener('keydown', popupCloseOnEsc);
   }
 }
 //--
@@ -130,33 +128,6 @@ function setPopupEventListeners() {
 }
 //--
 
-//--Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
-function clearInputError(popup, isPopupOpened) {
-
-  //при открытии кнопка "save" неактивна, т.к. нет никаких изменений и нечего сохранять. Исключён из обработки попап с просмотром картинки
-  const isPopupView = popup.classList.contains('popup_type_view');
-  if (!isPopupView) {
-    const buttonElement = popup.querySelector('.popup__save-button');
-    buttonElement.setAttribute('disabled', true);
-    buttonElement.classList.add('popup__save-button_inactive');
-  }
-  //
-
-  if (!isPopupOpened) {
-    const inputList = Array.from(popup.querySelectorAll('.popup__input'));
-    const errorList = Array.from(popup.querySelectorAll('.popup__input-error'))
-
-    inputList.forEach((inputElement) => {
-      inputElement.classList.remove('popup__input_type_error');
-    });
-    errorList.forEach((errorElement) => {
-      errorElement.textContent = '';
-      errorElement.classList.remove('popup__input-error_active');
-    });
-  }
-}
-//--
-
 //--Управляем видимостью формы
 function popupOpenClose(popup) {
   const isPopupOpened = popup.classList.contains('popup_opened'); //при открытии - false
@@ -166,7 +137,11 @@ function popupOpenClose(popup) {
   popup.classList.toggle('popup_opened'); //поменяли состояние попапа
 
   if (!isPopupOpened) {
-    document.addEventListener('keydown', popupCloseOnEsc);  //если попап открыт, обрабатывать нажатие клавиш
+    document.addEventListener('keydown', popupCloseOnEsc, { once: true });
+    //если попап открыт, обрабатывать нажатие клавиш. Снимать автоматом (если нажата "esc"), чтобы не прописывать снятие в колбэке
+  }
+  if (isPopupOpened) {
+    document.removeEventListener('keydown', popupCloseOnEsc); //снять слушатель при закрытии, если закрыто не по "esc"
   }
 }
 //--
@@ -228,6 +203,7 @@ function addCard(evt) {
 
 initPage(); //Инициализация страницы, загрузка карточек из массива
 setPopupEventListeners();
+enableValidation(objectOptionsForValidation);
 
 //--Обрабатываем нажатия по кнопкам
 editButton.addEventListener('click', () => {
