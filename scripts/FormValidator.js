@@ -6,6 +6,8 @@ class FormValidator {
     this._inactiveButtonClass = options.inactiveButtonClass;
     this._inputErrorClass = options.inputErrorClass;
     this._errorClass = options.errorClass;
+    this._buttonElement = this._formSelector.querySelector(this._submitButtonSelector);
+    this._inputList = Array.from(this._formSelector.querySelectorAll(this._inputSelector));
   }
 
   enableValidation() {
@@ -15,29 +17,31 @@ class FormValidator {
     this._setEventListeners();
   }
 
-  _hasInvalidInput(inputList) { //есть ли хотя бы одно невалидное поле
-    return inputList.some((inputElement) => {
+  clearInputError() { //Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
+    this._disableSaveButton();
+    this._inputList.forEach((inputElement) => { this._hideInputError(inputElement) });
+  }
+
+  _hasInvalidInput() { //есть ли хотя бы одно невалидное поле
+    return this._inputList.some((inputElement) => {
       return !inputElement.validity.valid;
     });
   }
 
-  _toggleButtonState(inputList, buttonElement) { //состояние кнопки в зависимости от корректности ввода
-    if (this._hasInvalidInput(inputList)) {
-      this._disableSaveButton(buttonElement);
+  _toggleButtonState() { //состояние кнопки в зависимости от корректности ввода
+    if (this._hasInvalidInput()) {
+      this._disableSaveButton();
     } else {
-      buttonElement.removeAttribute('disabled');
-      buttonElement.classList.remove(this._inactiveButtonClass);
+      this._buttonElement.removeAttribute('disabled');
+      this._buttonElement.classList.remove(this._inactiveButtonClass);
     }
   }
 
   _setEventListeners() {  //слушатели на поля ввода
-    const inputList = Array.from(this._formSelector.querySelectorAll(this._inputSelector));
-    const buttonElement = this._formSelector.querySelector(this._submitButtonSelector);
-
-    inputList.forEach((inputElement) => {
+    this._inputList.forEach((inputElement) => {
       inputElement.addEventListener('input', () => {
         this._isValid(inputElement);
-        this._toggleButtonState(inputList, buttonElement);
+        this._toggleButtonState();
       });
     });
   }
@@ -64,9 +68,9 @@ class FormValidator {
     errorElement.textContent = '';
   }
 
-  _disableSaveButton(buttonElement) { //заблокировать кнопку
-    buttonElement.setAttribute('disabled', true);
-    buttonElement.classList.add(this._inactiveButtonClass);
+  _disableSaveButton() { //заблокировать кнопку
+    this._buttonElement.setAttribute('disabled', true);
+    this._buttonElement.classList.add(this._inactiveButtonClass);
   }
 }
 

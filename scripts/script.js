@@ -82,55 +82,21 @@ function setPopupEventListeners() {
 }
 //--
 
-//--Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
-function clearInputError(popup, isPopupOpened) {
-
-  //при открытии кнопка "save" неактивна, т.к. нет никаких изменений и нечего сохранять. Исключён из обработки попап с просмотром картинки
-  const isPopupView = popup.classList.contains('popup_type_view');
-  if (!isPopupView) {
-    const buttonElement = popup.querySelector(options.submitButtonSelector);
-    disableSaveButton(buttonElement, options);
-  }
-  //
-
-  if (!isPopupOpened) {
-    const inputList = Array.from(popup.querySelectorAll(options.inputSelector));
-    inputList.forEach((inputElement) => {
-      hideInputError(popup, inputElement, options);
-    });
-  }
-}
-//--
-
-//--Делаем кнопку "save" неактивной
-function disableSaveButton(buttonElement, options) {
-  buttonElement.setAttribute('disabled', true);
-  buttonElement.classList.add(options.inactiveButtonClass);
-}
-//--
-
-//--Прячем ошибку
-function hideInputError(formElement, inputElement, options) {
-  const errorElement = formElement.querySelector(`#${inputElement.id}-error`);
-  inputElement.classList.remove(options.inputErrorClass);
-  errorElement.classList.remove(options.errorClass);
-  errorElement.textContent = '';
-}
-//--
-
 //--Управляем видимостью формы
 function popupOpenClose(popup) {
-  const isPopupOpened = popup.classList.contains('popup_opened'); //при открытии - false
-
-  clearInputError(popup, isPopupOpened);  //очистили ошибки
-
   popup.classList.toggle('popup_opened'); //поменяли состояние попапа
 
-  if (!isPopupOpened) {
+  const isPopupOpened = popup.classList.contains('popup_opened'); //при открытии - true
+
+  if (isPopupOpened) {
     document.addEventListener('keydown', popupCloseOnEsc, { once: true });
     //если попап открыт, обрабатывать нажатие клавиш. Снимать автоматом (если нажата "esc"), чтобы не прописывать снятие в колбэке
-  }
-  if (isPopupOpened) {
+
+    //скрыть ошибки при открытии попапа
+    editForm.clearInputError();
+    addForm.clearInputError();
+
+  } else {
     document.removeEventListener('keydown', popupCloseOnEsc); //снять слушатель при закрытии, если закрыто не по "esc"
   }
 }
@@ -194,4 +160,4 @@ import { Card } from './Card.js';
 import { FormValidator } from './FormValidator.js';
 import { initialCards, options } from './data.js';
 
-export {popupOpenClose, popupElementView};
+export { popupOpenClose, popupElementView };
