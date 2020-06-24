@@ -1,8 +1,10 @@
+import { popupOpenClose, popupElementView, imageElement, captionElement } from './index.js';
+
 class Card {
-  constructor(name, link, alt, template) {
-    this._name = name;
-    this._link = link;
-    this._alt = alt;
+  constructor(item, template) {
+    this._name = item.name;
+    this._link = item.link;
+    this._alt = item.alt;
     this._template = template;
   }
 
@@ -46,11 +48,10 @@ class Card {
     });
 
     cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view
-      const imageElement = popupElementView.querySelector('.popup__image');
-      const captionElement = popupElementView.querySelector('.popup__image-caption');
 
       imageElement.src = this._link;
       captionElement.textContent = this._name;
+      imageElement.alt = this._alt;
 
       popupOpenClose(popupElementView);
     });
@@ -58,4 +59,3 @@ class Card {
 }
 
 export { Card };
-import { popupOpenClose, popupElementView } from './script.js';

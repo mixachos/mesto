@@ -1,3 +1,7 @@
+import { Card } from './Card.js';
+import { FormValidator } from './FormValidator.js';
+import { initialCards, options } from './data.js';
+
 //--Находим блоки
 const profileElement = document.querySelector('.profile');
 const popupElementEdit = document.querySelector('.popup_type_edit');
@@ -26,6 +30,8 @@ const linkInput = popupElementAdd.querySelector('.popup__input_type_link');
 
 //--Элементы формы view
 const closeButtonView = popupElementView.querySelector('.popup__close-button');
+const imageElement = popupElementView.querySelector('.popup__image');
+const captionElement = popupElementView.querySelector('.popup__image-caption');
 //--
 
 //--Шаблон карточки
@@ -120,7 +126,7 @@ function addCard(evt) {
 
 //--Собрать и вернуть карточку как экземпляр класса
 function renderCard(item) {
-  const card = new Card(item.name, item.link, item.alt, cardTemplate);
+  const card = new Card(item, cardTemplate);
   const cardElement = card.generateCard();
   return cardElement;
 }
@@ -156,8 +162,4 @@ editForm.enableValidation();
 addForm.enableValidation();
 //--
 
-import { Card } from './Card.js';
-import { FormValidator } from './FormValidator.js';
-import { initialCards, options } from './data.js';
-
-export { popupOpenClose, popupElementView };
+export { popupOpenClose, popupElementView, imageElement, captionElement };
