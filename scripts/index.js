@@ -1,4 +1,6 @@
 import { Card } from './Card.js';
+import { Section } from './Section.js';
+import { Popup } from './Popup.js';
 import { FormValidator } from './FormValidator.js';
 import { initialCards, options } from './data.js';
 
@@ -40,11 +42,11 @@ const cardTemplate = document.querySelector('#card-template').content;  //сод
 //--
 
 //--Инициализация страницы. Создать карточки как экземпляры класса, беря данные из массива
-function initPage() {
+/*function initPage() {
   initialCards.forEach((item) => {
     cardsList.append(renderCard(item));
   });
-}
+}*/
 //--
 
 //--Инициализация формы edit, считываем значения со страницы
@@ -66,12 +68,12 @@ function editProfile(evt) {
 //--
 
 //--Обработка нажатия esc, закрытие попапа
-function popupCloseOnEsc(evt) {
+/*function popupCloseOnEsc(evt) {
   if (evt.key === 'Escape') {
     const popup = document.querySelector('.popup_opened');
     popup.classList.remove('popup_opened');
   }
-}
+}*/
 //--
 
 //--Обработка щелчка на оверлее для закртыия попапа
@@ -118,7 +120,9 @@ function addCard(evt) {
     alt: `Фото ${titleInput.value}`
   };
 
-  cardsList.prepend(renderCard(item));
+  //cardsList.prepend(renderCard(item));
+ cards.addItem(renderCard(item), 'CARD');
+
 
   popupOpenClose(popupElementAdd);
 }
@@ -132,23 +136,44 @@ function renderCard(item) {
 }
 //--
 
-initPage(); //Инициализация страницы, загрузка карточек из массива
-setPopupEventListeners();
+//initPage(); //Инициализация страницы, загрузка карточек из массива
+
+
+const cards = new Section ({
+  items: initialCards,
+  renderer: (item) => {
+    //const card = new Card(item, cardTemplate);
+    //const cardElement = card.generateCard();
+    //cards.addItem(cardElement);
+    cards.addItem(renderCard(item));
+  }
+}, '.cards__list');
+cards.renderItems();
+
+
+//setPopupEventListeners();
 
 //--Обрабатываем нажатия по кнопкам
+const popupEdit = new Popup('.popup_type_edit');
+const popupAdd = new Popup('.popup_type_add');
+const popupView = new Popup('.popup_type_view');
+
 editButton.addEventListener('click', () => {
   initPopupEdit();
-  popupOpenClose(popupElementEdit);
+  popupEdit.open();
 });
 addButton.addEventListener('click', () => {
   titleInput.value = '';
   linkInput.value = '';
 
-  popupOpenClose(popupElementAdd);
+  //popupOpenClose(popupElementAdd);
+  popupAdd.open();
 });
 
-closeButtonEdit.addEventListener('click', () => { popupOpenClose(popupElementEdit) });
-closeButtonAdd.addEventListener('click', () => { popupOpenClose(popupElementAdd) });
+popupEdit.setEventListeners(closeButtonEdit);
+popupAdd.setEventListeners(closeButtonAdd);
+//closeButtonEdit.addEventListener('click', () => { popupEdit.close() });
+//closeButtonAdd.addEventListener('click', () => { popupOpenClose(popupElementAdd) });
 closeButtonView.addEventListener('click', () => { popupOpenClose(popupElementView) });
 
 popupElementAdd.addEventListener('submit', addCard);
