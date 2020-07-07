@@ -1,6 +1,8 @@
 class Popup{
   constructor(popupSelector) {
     this._popup = document.querySelector(popupSelector);
+    this._handleEscClose = this._handleEscClose.bind(this);
+    this._closeButton = this._popup.querySelector('.popup__close-button');
   }
   open(){
     this._popup.classList.add('popup_opened');
@@ -12,16 +14,13 @@ class Popup{
     document.removeEventListener('keydown', this._handleEscClose);
   }
   _handleEscClose(evt){
-    console.log(evt);
+    //console.log(evt);
     if (evt.key === 'Escape') {
-      document
-      .querySelector('.popup_opened')
-      .classList
-      .remove('popup_opened');
+      this.close();
     }
   }
-  setEventListeners(closeButton){
-    closeButton.addEventListener('click', () => { this.close() });
+  setEventListeners(){
+    this._closeButton.addEventListener('click', () => { this.close() });
     this._popup.addEventListener('click', (evt) => {
       const isPopupOverlayClicked = evt.target.classList.contains('popup'); //если щёлкнули по оверлею, закрыть попап
       if (isPopupOverlayClicked) {

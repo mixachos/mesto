@@ -17,10 +17,10 @@ class FormValidator {
     this._setEventListeners();
   }
 
-  clearInputError() { //Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
+  /*clearInputError() { //Очистка ошибок, если при предыдущем открытии попапа были введены некорректные данные
     this._disableSaveButton();
     this._inputList.forEach((inputElement) => { this._hideInputError(inputElement) });
-  }
+  }*/
 
   _hasInvalidInput() { //есть ли хотя бы одно невалидное поле
     return this._inputList.some((inputElement) => {

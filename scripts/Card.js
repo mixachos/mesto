@@ -1,11 +1,12 @@
-import { popupOpenClose, popupElementView, imageElement, captionElement } from './index.js';
+import { popupElementView, imageElement, captionElement } from './index.js';
 
 class Card {
-  constructor(item, template) {
+  constructor(item, template, {handleCardClick}) {
     this._name = item.name;
     this._link = item.link;
     this._alt = item.alt;
     this._template = template;
+    this.handleCardClick = handleCardClick;
   }
 
   generateCard() {  //собрать карточку по шаблону, добавить слушатели
@@ -48,13 +49,17 @@ class Card {
     });
 
     cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view
+      this.handleCardClick();
+    });
+
+    /*cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view
 
       imageElement.src = this._link;
       captionElement.textContent = this._name;
       imageElement.alt = this._alt;
 
       popupOpenClose(popupElementView);
-    });
+    });*/
   }
 }
 
