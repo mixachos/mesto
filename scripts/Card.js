@@ -1,7 +1,7 @@
 import { popupElementView, imageElement, captionElement } from './index.js';
 
 class Card {
-  constructor(item, template, {handleCardClick}) {
+  constructor(item, template, { handleCardClick }) {
     this._name = item.name;
     this._link = item.link;
     this._alt = item.alt;
@@ -51,15 +51,6 @@ class Card {
     cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view
       this.handleCardClick();
     });
-
-    /*cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view
-
-      imageElement.src = this._link;
-      captionElement.textContent = this._name;
-      imageElement.alt = this._alt;
-
-      popupOpenClose(popupElementView);
-    });*/
   }
 }
 

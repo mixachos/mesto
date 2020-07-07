@@ -5,7 +5,7 @@ class Section {
     this._container = document.querySelector(containerSelector);
   }
   addItem(element, flag) {
-    if (flag === 'CARD'){
+    if (flag === 'CARD') {
       this._container.prepend(element);
     } else {
       this._container.append(element);

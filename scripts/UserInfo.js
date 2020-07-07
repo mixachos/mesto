@@ -11,10 +11,9 @@ class UserInfo {
 
     return this._pageValues;
   }
-  setUserInfo({nameInput, jobInput}) {
-    nameInput.textContent = 'a';
-
-    console.log(nameInput);
+  setUserInfo({ name, job }, { nameElement, jobElement }) {
+    nameElement.textContent = name;
+    jobElement.textContent = job;
   }
 }
 

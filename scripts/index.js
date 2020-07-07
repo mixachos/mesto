@@ -40,23 +40,7 @@ const captionElement = popupElementView.querySelector('.popup__image-caption');
 //--
 
 //--Шаблон карточки
-//const cardsList = document.querySelector('.cards__list');  //выбрали контейнер для добавления в него карточек
 const cardTemplate = document.querySelector('#card-template').content;  //содержимое шаблона
-//--
-
-//--Инициализация страницы. Создать карточки как экземпляры класса, беря данные из массива
-/*function initPage() {
-  initialCards.forEach((item) => {
-    cardsList.append(renderCard(item));
-  });
-}*/
-//--
-
-//--Инициализация формы edit, считываем значения со страницы
-/*function initPopupEdit() {
-  nameInput.value = nameElement.textContent;
-  jobInput.value = jobElement.textContent;
-}*/
 //--
 
 const userInfo = new UserInfo(
@@ -64,65 +48,7 @@ const userInfo = new UserInfo(
   '.profile__job'
 );
 
-
-
-//--Записываем значения из формы edit на страницу
-function editProfile(evt) {
-  evt.preventDefault();
-
-  nameElement.textContent = nameInput.value;
-  jobElement.textContent = jobInput.value;
-
-  popupOpenClose(popupElementEdit);
-}
-//--
-
-//--Обработка нажатия esc, закрытие попапа
-/*function popupCloseOnEsc(evt) {
-  if (evt.key === 'Escape') {
-    const popup = document.querySelector('.popup_opened');
-    popup.classList.remove('popup_opened');
-  }
-}*/
-//--
-
-//--Обработка щелчка на оверлее для закртыия попапа
-/*function setPopupEventListeners() {
-  const popupList = Array.from(document.querySelectorAll('.popup'));  //собрали все попапы
-  popupList.forEach((popupElement) => {
-    popupElement.addEventListener('click', (evt) => { //каждому попапу добавили слушатель
-      const isPopupOverlayClicked = evt.target.classList.contains('popup'); //если щёлкнули по оверлею, закрыть попап
-      if (isPopupOverlayClicked) {
-        popupOpenClose(popupElement);
-      }
-    });
-  });
-}*/
-//--
-
-//--Управляем видимостью формы
-/*function popupOpenClose(popup) {
-  popup.classList.toggle('popup_opened'); //поменяли состояние попапа
-
-  const isPopupOpened = popup.classList.contains('popup_opened'); //при открытии - true
-
-  if (isPopupOpened) {
-    document.addEventListener('keydown', popupCloseOnEsc, { once: true });
-    //если попап открыт, обрабатывать нажатие клавиш. Снимать автоматом (если нажата "esc"), чтобы не прописывать снятие в колбэке
-
-    //скрыть ошибки при открытии попапа
-    editForm.clearInputError();
-    addForm.clearInputError();
-
-  } else {
-    document.removeEventListener('keydown', popupCloseOnEsc); //снять слушатель при закрытии, если закрыто не по "esc"
-  }
-}*/
-//--
-
-//--Добавить карточку на страницу из формы add
-function addCard(evt) {
-  evt.preventDefault();
+function addCard() {
 
   const item = {
     name: `${titleInput.value}`,
@@ -130,7 +56,6 @@ function addCard(evt) {
     alt: `Фото ${titleInput.value}`
   };
 
-  //cardsList.prepend(renderCard(item));
   cards.addItem(renderCard(item), 'CARD');
   popupAdd.close();
 }
@@ -151,48 +76,46 @@ function renderCard(item) {
 }
 //--
 
-//initPage(); //Инициализация страницы, загрузка карточек из массива
-
-
 const cards = new Section({
   items: initialCards,
   renderer: (item) => {
-    //const card = new Card(item, cardTemplate);
-    //const cardElement = card.generateCard();
-    //cards.addItem(cardElement);
     cards.addItem(renderCard(item));
   }
 }, '.cards__list');
 cards.renderItems();
 
-
-//setPopupEventListeners();
-
-//--Обрабатываем нажатия по кнопкам
 const popupEdit = new PopupWithForm(
   '.popup_type_edit',
   {
-    handleFormSubmit: () => {
-      const item = {
-        nameInput,
-        jobInput
+    handleFormSubmit: (evt) => {
+      evt.preventDefault();
+      const inputValues = {
+        name: nameInput.value,
+        job: jobInput.value
       }
-      userInfo.setUserInfo(item);
+      const pageElements = {
+        nameElement,
+        jobElement
+      }
+      console.log(inputValues);
+      console.log(pageElements);
+
+      userInfo.setUserInfo(inputValues, pageElements);
       popupEdit.close();
     }
   });
-//const popupAdd = new Popup('.popup_type_add');
+
 const popupAdd = new PopupWithForm(
   '.popup_type_add',
   {
     handleFormSubmit: (evt) => {
-      addCard(evt);
+      evt.preventDefault();
+      addCard();
     }
   });
 const popupView = new PopupWithImage('.popup_type_view');
 
 editButton.addEventListener('click', () => {
-  //initPopupEdit();
   const pageValues = userInfo.getUserInfo();
 
   nameInput.value = pageValues.nameInput;
@@ -201,23 +124,12 @@ editButton.addEventListener('click', () => {
   popupEdit.open();
 });
 addButton.addEventListener('click', () => {
-  /*titleInput.value = '';
-  linkInput.value = '';*/
-
-  //popupOpenClose(popupElementAdd);
   popupAdd.open();
 });
 
 popupEdit.setEventListeners();
 popupAdd.setEventListeners();
 popupView.setEventListeners();
-//closeButtonEdit.addEventListener('click', () => { popupEdit.close() });
-//closeButtonAdd.addEventListener('click', () => { popupOpenClose(popupElementAdd) });
-//closeButtonView.addEventListener('click', () => { popupOpenClose(popupElementView) });
-
-//popupElementAdd.addEventListener('submit', addCard);
-//popupElementEdit.addEventListener('submit', editProfile);
-//--
 
 //--Подключить валидацию форм
 const editForm = new FormValidator(options, popupElementEdit);

@@ -19,28 +19,24 @@ class PopupWithForm extends Popup {
     super.open();
 
     this._buttonElement.setAttribute('disabled', true);
-
     this._buttonElement.classList.add('popup__save-button_inactive');
-
     this._inputList.forEach((inputElement) => { this._hideInputError(inputElement) });
-
   }
-  close(){
+  close() {
     super.close();
     this._form.reset();
 
   }
   _getInputValues() {
-    //this._inputList = this._form.querySelectorAll('.popup__input');
 
     this._formValues = {};
-    this._inputList.forEach(input => {this._formValues[input.id] = input.value});
+    this._inputList.forEach(input => { this._formValues[input.id] = input.value });
 
     return this._formValues;
   }
   setEventListeners() {
     super.setEventListeners();
-    this._form.addEventListener('submit', (evt) => {this._handleFormSubmit(evt)});
+    this._form.addEventListener('submit', (evt) => { this._handleFormSubmit(evt) });
   }
 
 
