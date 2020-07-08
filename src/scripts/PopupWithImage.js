@@ -1,5 +1,5 @@
 import { Popup } from './Popup.js';
-import { captionElement, imageElement } from './index.js';
+import { captionElement, imageElement } from '../index.js';
 
 class PopupWithImage extends Popup {
   open(item) {
