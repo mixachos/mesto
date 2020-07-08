@@ -1,5 +1,3 @@
-import { popupElementView, imageElement, captionElement } from './index.js';
-
 class Card {
   constructor(item, template, { handleCardClick }) {
     this._name = item.name;
@@ -48,7 +46,7 @@ class Card {
       this._deleteCard(deleteButton);
     });
 
-    cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view
+    cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view, действие определено при создании экземпляра
       this.handleCardClick();
     });
   }

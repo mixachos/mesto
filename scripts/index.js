@@ -1,6 +1,5 @@
 import { Card } from './Card.js';
 import { Section } from './Section.js';
-import { Popup } from './Popup.js';
 import { PopupWithImage } from './PopupWithImage.js';
 import { PopupWithForm } from './PopupWithForm.js';
 import { UserInfo } from './UserInfo.js';
@@ -17,24 +16,19 @@ const popupElementView = document.querySelector('.popup_type_view');
 //--Элементы на странице
 const editButton = profileElement.querySelector('.profile__edit-button');
 const addButton = profileElement.querySelector('.profile__add-button');
-const nameElement = profileElement.querySelector('.profile__name');
-const jobElement = profileElement.querySelector('.profile__job');
 //--
 
 //--Элементы формы edit
-const closeButtonEdit = popupElementEdit.querySelector('.popup__close-button');
 const nameInput = popupElementEdit.querySelector('.popup__input_type_name');
 const jobInput = popupElementEdit.querySelector('.popup__input_type_job');
 //--
 
 //--Элементы формы add
-const closeButtonAdd = popupElementAdd.querySelector('.popup__close-button');
 const titleInput = popupElementAdd.querySelector('.popup__input_type_title');
 const linkInput = popupElementAdd.querySelector('.popup__input_type_link');
 //--
 
 //--Элементы формы view
-const closeButtonView = popupElementView.querySelector('.popup__close-button');
 const imageElement = popupElementView.querySelector('.popup__image');
 const captionElement = popupElementView.querySelector('.popup__image-caption');
 //--
@@ -43,22 +37,13 @@ const captionElement = popupElementView.querySelector('.popup__image-caption');
 const cardTemplate = document.querySelector('#card-template').content;  //содержимое шаблона
 //--
 
+//--Для сбора и записи данных через форму редактирования
 const userInfo = new UserInfo(
-  '.profile__name',
-  '.profile__job'
+  {
+    nameElement: '.profile__name',
+    jobElement: '.profile__job'
+  }
 );
-
-function addCard() {
-
-  const item = {
-    name: `${titleInput.value}`,
-    link: `${linkInput.value}`,
-    alt: `Фото ${titleInput.value}`
-  };
-
-  cards.addItem(renderCard(item), 'CARD');
-  popupAdd.close();
-}
 //--
 
 //--Собрать и вернуть карточку как экземпляр класса
@@ -67,7 +52,7 @@ function renderCard(item) {
     item,
     cardTemplate,
     {
-      handleCardClick: () => {
+      handleCardClick: () => {  //при клике на картинке открывать попап просмотра и передавать туда данные
         popupView.open(item);
       }
     });
@@ -76,60 +61,74 @@ function renderCard(item) {
 }
 //--
 
+//--Инициализация страницы
 const cards = new Section({
-  items: initialCards,
-  renderer: (item) => {
+  items: initialCards, //массив с данными
+  renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
     cards.addItem(renderCard(item));
   }
 }, '.cards__list');
-cards.renderItems();
+cards.renderItems();  //проходит по всему массиву
+//--
 
+//--Попап с формой редактирования профиля
 const popupEdit = new PopupWithForm(
   '.popup_type_edit',
   {
-    handleFormSubmit: (evt) => {
+    handleFormSubmit: (evt) => {  //при сабмите
       evt.preventDefault();
-      const inputValues = {
+      const inputValues = { //взять данные из полей формы
         name: nameInput.value,
         job: jobInput.value
       }
-      const pageElements = {
-        nameElement,
-        jobElement
-      }
-      console.log(inputValues);
-      console.log(pageElements);
 
-      userInfo.setUserInfo(inputValues, pageElements);
+      userInfo.setUserInfo(inputValues); //установить на странице новые значения
       popupEdit.close();
     }
   });
+//--
 
+//--Попап с формой добавления карточки
 const popupAdd = new PopupWithForm(
   '.popup_type_add',
   {
-    handleFormSubmit: (evt) => {
+    handleFormSubmit: (evt) => {  //при сабмите
       evt.preventDefault();
-      addCard();
+      const item = {  //взять данные из полей
+        name: `${titleInput.value}`,
+        link: `${linkInput.value}`,
+        alt: `Фото ${titleInput.value}`
+      };
+
+      cards.addItem(renderCard(item), 'CARD');  //добавить карточку в начало списка
+      popupAdd.close();
     }
   });
+
+//--Попап с просмотром картинки
 const popupView = new PopupWithImage('.popup_type_view');
+//--
 
+//--Слушатели на кнопки, для открытия попапов
 editButton.addEventListener('click', () => {
-  const pageValues = userInfo.getUserInfo();
+  const pageValues = userInfo.getUserInfo();  //взять данные со страницы
 
-  nameInput.value = pageValues.nameInput;
+  nameInput.value = pageValues.nameInput; //установить новые значения полям формы
   jobInput.value = pageValues.jobInput;
 
   popupEdit.open();
 });
+
 addButton.addEventListener('click', () => {
   popupAdd.open();
 });
+//--
 
+//--Слушатели на попапы
 popupEdit.setEventListeners();
 popupAdd.setEventListeners();
 popupView.setEventListeners();
+//--
 
 //--Подключить валидацию форм
 const editForm = new FormValidator(options, popupElementEdit);
