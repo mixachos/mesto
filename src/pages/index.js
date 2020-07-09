@@ -1,11 +1,11 @@
-import { Card } from './scripts/Card.js';
-import { Section } from './scripts/Section.js';
-import { PopupWithImage } from './scripts/PopupWithImage.js';
-import { PopupWithForm } from './scripts/PopupWithForm.js';
-import { UserInfo } from './scripts/UserInfo.js';
-import { FormValidator } from './scripts/FormValidator.js';
-import { initialCards, options } from './scripts/data.js';
-import './pages/index.css';
+import { Card } from '../scripts/Card.js';
+import { Section } from '../scripts/Section.js';
+import { PopupWithImage } from '../scripts/PopupWithImage.js';
+import { PopupWithForm } from '../scripts/PopupWithForm.js';
+import { UserInfo } from '../scripts/UserInfo.js';
+import { FormValidator } from '../scripts/FormValidator.js';
+import { initialCards, options } from '../scripts/data.js';
+import './index.css';
 
 //--Находим блоки
 const profileElement = document.querySelector('.profile');
@@ -75,39 +75,43 @@ cards.renderItems();  //проходит по всему массиву
 //--Попап с формой редактирования профиля
 const popupEdit = new PopupWithForm(
   '.popup_type_edit',
+  '.popup__container',
+  '.popup__input',
   {
-    handleFormSubmit: (evt) => {  //при сабмите
+    handleFormSubmit: (evt, formValues) => {  //при сабмите
       evt.preventDefault();
-      const inputValues = { //взять данные из полей формы
-        name: nameInput.value,
-        job: jobInput.value
-      }
-
-      userInfo.setUserInfo(inputValues); //установить на странице новые значения
+      userInfo.setUserInfo(formValues); //установить на странице новые значения
       popupEdit.close();
-    }
-  });
+    },
+    clear: () => { editForm.clearInputError() }
+  },
+
+);
 //--
 
 //--Попап с формой добавления карточки
 const popupAdd = new PopupWithForm(
-  '.popup_type_add',
+  '.popup_type_add',  //селектор попапа
+  '.popup__container', //для выбора формы при навешивании слушателя
+  '.popup__input',  //для выбора инпутов формы, для сбора значений, очистки
   {
-    handleFormSubmit: (evt) => {  //при сабмите
+    handleFormSubmit: (evt, formValues) => {  //при сабмите собрать данные с полей
       evt.preventDefault();
-      const item = {  //взять данные из полей
-        name: `${titleInput.value}`,
-        link: `${linkInput.value}`,
-        alt: `Фото ${titleInput.value}`
+
+      const item = {  //собрать объект на основе данных
+        name: formValues['place-input'],
+        link: formValues['link-input'],
+        alt: `Фото ${formValues['place-input']}`
       };
 
       cards.addItem(renderCard(item), 'CARD');  //добавить карточку в начало списка
       popupAdd.close();
-    }
+    },
+    clear: () => { addForm.clearInputError() }
   });
 
 //--Попап с просмотром картинки
-const popupView = new PopupWithImage('.popup_type_view');
+const popupView = new PopupWithImage('.popup_type_view', captionElement, imageElement);
 //--
 
 //--Слушатели на кнопки, для открытия попапов

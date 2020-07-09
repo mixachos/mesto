@@ -10,9 +10,9 @@ class UserInfo {
 
     return this._pageValues;
   }
-  setUserInfo({ name, job }) {
-    this._nameElement.textContent = name;
-    this._jobElement.textContent = job;
+  setUserInfo(formValues) {
+    this._nameElement.textContent = formValues['name-input'];
+    this._jobElement.textContent = formValues['job-input'];
   }
 }
 
