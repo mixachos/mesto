@@ -78,9 +78,15 @@ const popupEdit = new PopupWithForm(
   '.popup__container',
   '.popup__input',
   {
-    handleFormSubmit: (evt, formValues) => {  //при сабмите
+    handleFormSubmit: (evt, formValues) => {  //при сабмите собрать данные с полей
       evt.preventDefault();
-      userInfo.setUserInfo(formValues); //установить на странице новые значения
+
+      const dataSet = {   //собрать объект на основе данных
+        name: formValues['name-input'],
+        job: formValues['job-input']
+      };
+
+      userInfo.setUserInfo(dataSet); //установить на странице новые значения
       popupEdit.close();
     },
     clear: () => { editForm.clearInputError() }
@@ -118,8 +124,8 @@ const popupView = new PopupWithImage('.popup_type_view', captionElement, imageEl
 editButton.addEventListener('click', () => {
   const pageValues = userInfo.getUserInfo();  //взять данные со страницы
 
-  nameInput.value = pageValues.nameInput; //установить новые значения полям формы
-  jobInput.value = pageValues.jobInput;
+  nameInput.value = pageValues.name; //установить новые значения полям формы
+  jobInput.value = pageValues.job;
 
   popupEdit.open();
 });

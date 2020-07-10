@@ -4,15 +4,14 @@ class UserInfo {
     this._jobElement = document.querySelector(jobElement);
   }
   getUserInfo() {
-    this._pageValues = {};
-    this._pageValues.nameInput = this._nameElement.textContent;
-    this._pageValues.jobInput = this._jobElement.textContent;
-
-    return this._pageValues;
+    return {
+      name: this._nameElement.textContent,
+      job: this._jobElement.textContent
+    }
   }
-  setUserInfo(formValues) {
-    this._nameElement.textContent = formValues['name-input'];
-    this._jobElement.textContent = formValues['job-input'];
+  setUserInfo({ name, job }) {
+    this._nameElement.textContent = name;
+    this._jobElement.textContent = job;
   }
 }
 
