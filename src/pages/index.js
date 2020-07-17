@@ -6,6 +6,7 @@ import { UserInfo } from '../scripts/UserInfo.js';
 import { FormValidator } from '../scripts/FormValidator.js';
 import { initialCards, options } from '../scripts/data.js';
 import './index.css';
+import { Popup } from '../scripts/Popup.js';
 
 //--Находим блоки
 const profileElement = document.querySelector('.profile');
@@ -55,8 +56,14 @@ function renderCard(item) {
     {
       handleCardClick: () => {  //при клике на картинке открывать попап просмотра и передавать туда данные
         popupView.open(item);
+      },
+      handleDeleteButtonClick: (evt) => {
+        popupDelete.open();
+
+        evt.target.closest('.cards__item').remove();
       }
-    });
+    }
+    );
   const cardElement = card.generateCard();
   return cardElement;
 }
@@ -83,7 +90,7 @@ const popupEdit = new PopupWithForm(
 
       const dataSet = {   //собрать объект на основе данных
         name: formValues['name-input'],
-        job: formValues['job-input']
+        about: formValues['job-input']
       };
 
       userInfo.setUserInfo(dataSet); //установить на странице новые значения
@@ -120,6 +127,10 @@ const popupAdd = new PopupWithForm(
 const popupView = new PopupWithImage('.popup_type_view', captionElement, imageElement);
 //--
 
+//--Попап удаления
+const popupDelete = new Popup('.popup_type_delete-card'); //сделать отдельный класс
+//--
+
 //--Слушатели на кнопки, для открытия попапов
 editButton.addEventListener('click', () => {
   const pageValues = userInfo.getUserInfo();  //взять данные со страницы
@@ -139,6 +150,7 @@ addButton.addEventListener('click', () => {
 popupEdit.setEventListeners();
 popupAdd.setEventListeners();
 popupView.setEventListeners();
+popupDelete.setEventListeners();
 //--
 
 //--Подключить валидацию форм
@@ -148,4 +160,56 @@ editForm.enableValidation();
 addForm.enableValidation();
 //--
 
-export { popupElementView, imageElement, captionElement };
+export { popupElementView, imageElement, captionElement, popupDelete };
+
+
+//SPRINT #9
+fetch('https://mesto.nomoreparties.co/v1/cohort-13/cards', {
+  headers: {
+    authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13'
+  }
+})
+  .then(res => res.json())
+  .then((result) => {
+    result.forEach(item => {
+      item.alt = `Фото "${item.name}" не загрузилось`;
+    });
+    const cards = new Section({
+      items: result, //массив с данными
+      renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
+        cards.addItem(renderCard(item));
+      }
+    }, '.cards__list');
+    cards.renderItems();
+    console.log(result);
+  });
+fetch('https://mesto.nomoreparties.co/v1/cohort-13/users/me', {
+  headers: {
+    authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13'
+  }
+})
+  .then(res => res.json())
+  .then((result) => {
+    userInfo.setUserInfo(result);
+    console.log(result);
+  console.log(userInfo.getUserInfo().name);
+  });
+
+
+ /*fetch('https://mesto.nomoreparties.co/v1/cohort-13/users/me', {
+  method: 'PATCH',
+  headers: {
+    authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Васька',
+    about: 'Physicist and Chemist'
+  })
+});*/
+const obj = JSON.stringify({
+  name: `${userInfo.getUserInfo().name}-test`,
+  about: 'Physicist and Chemist'
+})
+console.log(typeof(obj));
+

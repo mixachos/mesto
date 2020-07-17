@@ -1,10 +1,13 @@
+import {popupDelete} from '../pages/index.js';
+
 class Card {
-  constructor({ name, link, alt }, template, { handleCardClick }) {
+  constructor({ name, link, alt }, template, { handleCardClick, handleDeleteButtonClick }) {
     this._name = name;
     this._link = link;
     this._alt = alt;
     this._template = template;
     this.handleCardClick = handleCardClick;
+    this.handleDeleteButtonClick = handleDeleteButtonClick;
   }
 
   generateCard() {  //собрать карточку по шаблону, добавить слушатели
@@ -30,7 +33,8 @@ class Card {
   }
 
   _deleteCard(deleteButton) { //удалить карточку
-    deleteButton.closest('.cards__item').remove();
+    //popupDelete.open(); //вынести обработчик наружу
+    //deleteButton.closest('.cards__item').remove();
   }
 
   _setEventListeners() {  //добавить слушатели
@@ -42,8 +46,9 @@ class Card {
       this._likeCard(likeButton);
     });
 
-    deleteButton.addEventListener('click', () => {  //на корзину
-      this._deleteCard(deleteButton);
+    deleteButton.addEventListener('click', (evt) => {  //на корзину
+      //this._deleteCard(deleteButton);
+      this.handleDeleteButtonClick(evt);
     });
 
     cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view, действие определено при создании экземпляра
