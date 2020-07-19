@@ -63,20 +63,11 @@ function renderCard(item) {
         evt.target.closest('.cards__item').remove();
       }
     }
-    );
+  );
   const cardElement = card.generateCard();
+  //card.getLikes();
   return cardElement;
 }
-//--
-
-//--Инициализация страницы
-const cards = new Section({
-  items: initialCards, //массив с данными
-  renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
-    cards.addItem(renderCard(item));
-  }
-}, '.cards__list');
-cards.renderItems();  //проходит по всему массиву
 //--
 
 //--Попап с формой редактирования профиля
@@ -92,8 +83,8 @@ const popupEdit = new PopupWithForm(
         name: formValues['name-input'],
         about: formValues['job-input']
       };
-
       userInfo.setUserInfo(dataSet); //установить на странице новые значения
+      api.setUserInfo(dataSet);
       popupEdit.close();
     },
     clear: () => { editForm.clearInputError() }
@@ -117,7 +108,9 @@ const popupAdd = new PopupWithForm(
         alt: `Фото ${formValues['place-input']}`
       };
 
-      cards.addItem(renderCard(item), 'CARD');  //добавить карточку в начало списка
+      //cards.addItem(renderCard(item), 'CARD');  //добавить карточку в начало списка
+      api.addNewCard(item);
+
       popupAdd.close();
     },
     clear: () => { addForm.clearInputError() }
@@ -164,52 +157,83 @@ export { popupElementView, imageElement, captionElement, popupDelete };
 
 
 //SPRINT #9
-fetch('https://mesto.nomoreparties.co/v1/cohort-13/cards', {
-  headers: {
-    authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13'
+
+
+class Api {
+  constructor(options) {
+    this._baseUrl = options.baseUrl;
+    this._headers = options.headers;
   }
-})
-  .then(res => res.json())
-  .then((result) => {
-    result.forEach(item => {
-      item.alt = `Фото "${item.name}" не загрузилось`;
+  getInitialCards() {
+    fetch(`${this._baseUrl}/cards`, {
+      headers: this._headers,
+    })
+      .then((res) => {return res.json()})
+      .then((result) => {
+        //alert();
+        result.forEach(item => {
+          item.alt = `Фото "${item.name}" не загрузилось`;
+        });
+        const cards = new Section({
+          items: result, //массив с данными
+          renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
+            cards.addItem(renderCard(item));
+          }
+        }, '.cards__list');
+        cards.renderItems();
+        console.log(result);
+      });
+  }
+  getUserInfo() {
+    fetch(`${this._baseUrl}/users/me`, {
+      method: 'GET',
+      headers: this._headers
+    })
+      .then(res => res.json())
+      .then((result) => {
+        userInfo.setUserInfo(result);
+      });
+  }
+  setUserInfo({ name, about }) {
+    fetch(`${this._baseUrl}/users/me`, {
+      method: 'PATCH',
+      headers: this._headers,
+      body: JSON.stringify({
+        name: name,
+        about: about
+      })
     });
-    const cards = new Section({
-      items: result, //массив с данными
-      renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
-        cards.addItem(renderCard(item));
-      }
-    }, '.cards__list');
-    cards.renderItems();
-    console.log(result);
-  });
-fetch('https://mesto.nomoreparties.co/v1/cohort-13/users/me', {
-  headers: {
-    authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13'
   }
-})
-  .then(res => res.json())
-  .then((result) => {
-    userInfo.setUserInfo(result);
-    console.log(result);
-  console.log(userInfo.getUserInfo().name);
-  });
+  addNewCard({ name, link, alt }) {
+    fetch(`${this._baseUrl}/cards`, {
+      method: 'POST',
+      headers: this._headers,
+      body: JSON.stringify({
+        name: name,
+        link: link,
+        alt: alt
+      })
+    })
+      .then(res => res.json())
+      .then((result) => {
+        const cardsSection = document.querySelector('.cards__list');
+        cardsSection.prepend(renderCard(result));
 
+        console.log(cardsSection);
+      });
+      //.finally(() => {this.getInitialCards()});
+  }
+}
 
- /*fetch('https://mesto.nomoreparties.co/v1/cohort-13/users/me', {
-  method: 'PATCH',
+const api = new Api({
+  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-13',
   headers: {
     authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: 'Васька',
-    about: 'Physicist and Chemist'
-  })
-});*/
-const obj = JSON.stringify({
-  name: `${userInfo.getUserInfo().name}-test`,
-  about: 'Physicist and Chemist'
-})
-console.log(typeof(obj));
+  }
+});
+
+api.getInitialCards();
+api.getUserInfo();
+
 
