@@ -21,7 +21,12 @@
 
     <main class="content">
       <section class="profile page__profile">
-        <img src="./images/icons/avatar.jpg" alt="Фото на аватар" class="profile__avatar">
+        <div class="profile__avatar-container">
+          <img src="./images/icons/avatar.jpg" alt="Фото на аватар" class="profile__avatar">
+          <button class="profile__edit-avatar-button"></button>
+
+        </div>
+
         <div class="profile__main-info">
           <div class="profile__title">
             <h1 class="profile__name">Жак-Ив Кусто</h1>
@@ -107,6 +112,19 @@
       <h4 class="popup__form-name">Вы уверены?</h4>
 
       <button class="popup__save-button" type="submit">Да</button>
+      <button class="popup__close-button" type="button" aria-label="Закрыть"></button>
+    </form>
+  </div>
+
+  <div class="popup popup_type_edit-avatar">
+    <form name="edit-avatar" action="#" class="popup__container" method="POST" novalidate>
+      <h4 class="popup__form-name">Редактировать картинку</h4>
+
+      <input type="url" id="link-input" class="popup__input popup__input_type_link" placeholder="Ссылка на картинку"
+        required>
+      <span id="link-input-error" class="popup__input-error"></span>
+
+      <button class="popup__save-button" type="submit">Изменить</button>
       <button class="popup__close-button" type="button" aria-label="Закрыть"></button>
     </form>
   </div>

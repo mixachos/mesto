@@ -35,8 +35,8 @@ class Card {
   }
 
   init(options) {
-    const isMineCard = this._ownerId === options._id;
-    if (!isMineCard) {
+    const isMyCard = this._ownerId === options._id;
+    if (!isMyCard) {
       this.deleteButton.remove();
     }
     this._likes.forEach(item => {

@@ -18,6 +18,7 @@ const popupElementView = document.querySelector('.popup_type_view');
 //--Элементы на странице
 const editButton = profileElement.querySelector('.profile__edit-button');
 const addButton = profileElement.querySelector('.profile__add-button');
+const editAvatarButton = profileElement.querySelector('.profile__edit-avatar-button');
 //--
 
 //--Элементы формы edit
@@ -138,8 +139,10 @@ const popupView = new PopupWithImage('.popup_type_view', captionElement, imageEl
 //--
 
 //--Попап удаления
-const popupDelete = new Popup('.popup_type_delete-card'); //сделать отдельный класс
+const popupDelete = new Popup('.popup_type_delete-card'); //сделать отдельный класс ??????
 //--
+
+const popupEditAvatar = new Popup('.popup_type_edit-avatar');
 
 //--Слушатели на кнопки, для открытия попапов
 editButton.addEventListener('click', () => {
@@ -154,6 +157,10 @@ editButton.addEventListener('click', () => {
 addButton.addEventListener('click', () => {
   popupAdd.open();
 });
+
+editAvatarButton.addEventListener('click', () => {
+  popupEditAvatar.open();
+})
 //--
 
 //--Слушатели на попапы
@@ -161,6 +168,7 @@ popupEdit.setEventListeners();
 popupAdd.setEventListeners();
 popupView.setEventListeners();
 popupDelete.setEventListeners();
+popupEditAvatar.setEventListeners();
 //--
 
 //--Подключить валидацию форм
