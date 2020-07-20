@@ -49,6 +49,7 @@ const userInfo = new UserInfo(
 //--
 
 //--Собрать и вернуть карточку как экземпляр класса
+
 function renderCard(item) {
   const card = new Card(
     item,
@@ -61,11 +62,27 @@ function renderCard(item) {
         popupDelete.open();
 
         evt.target.closest('.cards__item').remove();
+      },
+      handleLikeButtonClick: (evt) => {
+        const likeButton = evt.target;
+        likeButton.classList.toggle('cards__like-button_active');
+
+        const isLiked = likeButton.classList.contains('cards__like-button_active');
+        if (isLiked) {
+          api.setLike(evt, item);
+        } else {
+          api.removeLike(evt, item);
+        }
+      },
+      initCard: () => {
+        api.initCard(card);
       }
     }
   );
+
+  //card.init(); //??????
+
   const cardElement = card.generateCard();
-  //card.getLikes();
   return cardElement;
 }
 //--
@@ -83,7 +100,7 @@ const popupEdit = new PopupWithForm(
         name: formValues['name-input'],
         about: formValues['job-input']
       };
-      userInfo.setUserInfo(dataSet); //установить на странице новые значения
+      //userInfo.setUserInfo(dataSet); //установить на странице новые значения
       api.setUserInfo(dataSet);
       popupEdit.close();
     },
@@ -165,12 +182,12 @@ class Api {
     this._headers = options.headers;
   }
   getInitialCards() {
-    fetch(`${this._baseUrl}/cards`, {
+    return fetch(`${this._baseUrl}/cards`, {
       headers: this._headers,
     })
-      .then((res) => {return res.json()})
-      .then((result) => {
-        //alert();
+      .then((res) => { return res.json() })
+      /*.then((result) => {
+
         result.forEach(item => {
           item.alt = `Фото "${item.name}" не загрузилось`;
         });
@@ -181,9 +198,20 @@ class Api {
           }
         }, '.cards__list');
         cards.renderItems();
-        console.log(result);
+        //console.log(result);
+      });*/
+  }
+  initCard(card) {
+    fetch(`${this._baseUrl}/users/me`, {
+      method: 'GET',
+      headers: this._headers
+    })
+      .then(res => res.json())
+      .then(result => {
+        card.init(result);
       });
   }
+
   getUserInfo() {
     fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
@@ -192,6 +220,7 @@ class Api {
       .then(res => res.json())
       .then((result) => {
         userInfo.setUserInfo(result);
+        //console.log(result._id)
       });
   }
   setUserInfo({ name, about }) {
@@ -202,10 +231,14 @@ class Api {
         name: name,
         about: about
       })
-    });
+    })
+        .then(res => res.json())
+        .then((result) => {
+          userInfo.setUserInfo(result);
+        });
   }
   addNewCard({ name, link, alt }) {
-    fetch(`${this._baseUrl}/cards`, {
+      fetch(`${this._baseUrl}/cards`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -221,7 +254,30 @@ class Api {
 
         console.log(cardsSection);
       });
-      //.finally(() => {this.getInitialCards()});
+  }
+  setLike(evt, card) {
+    fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
+      method: 'PUT',
+      headers: this._headers,
+    })
+      .then(res => res.json())
+      .then((result) => {
+        const likesCounter = evt.target.nextElementSibling;
+        const likesQty = result.likes.length;
+        likesCounter.textContent = likesQty;
+      });
+  }
+  removeLike(evt, card) {
+    fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
+      method: 'DELETE',
+      headers: this._headers,
+    })
+      .then(res => res.json())
+      .then((result) => {
+        const likesCounter = evt.target.nextElementSibling;
+        const likesQty = result.likes.length;
+        likesCounter.textContent = likesQty;
+      });
   }
 }
 
@@ -233,7 +289,20 @@ const api = new Api({
   }
 });
 
-api.getInitialCards();
-api.getUserInfo();
+api.getInitialCards()
+.then((result) => {
 
+  result.forEach(item => {
+    item.alt = `Фото "${item.name}" не загрузилось`;
+  });
+  const cards = new Section({
+    items: result, //массив с данными
+    renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
+      cards.addItem(renderCard(item));
+    }
+  }, '.cards__list');
+  cards.renderItems();
+  //console.log(result);
+});
+api.getUserInfo();
 

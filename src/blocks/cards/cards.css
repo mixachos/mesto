@@ -6,3 +6,5 @@
 @import url('./__delete-button/cards__delete-button.css');
 @import url('./__list/cards__list.css');
 @import url('./__like-button/_active/cards__like-button_active.css');
+@import url('./__like-container/cards__like-container.css');
+@import url('./__like-counter/cards__like-counter.css');

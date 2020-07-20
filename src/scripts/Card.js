@@ -1,32 +1,50 @@
 import {popupDelete} from '../pages/index.js';
 
 class Card {
-  constructor({ name, link, alt, likes }, template, { handleCardClick, handleDeleteButtonClick }) {
-    this._name = name;
-    this._link = link;
-    this._alt = alt;
-    this._likes = likes;
+  constructor(card, template, { handleCardClick, handleDeleteButtonClick, handleLikeButtonClick, initCard }) {
+
+    this._name = card.name;
+    this._link = card.link;
+    this._alt = card.alt;
+    this._likes = card.likes;
+    this._ownerId = card.owner._id;
+    this._cardId = card._id;
     this._template = template;
     this.handleCardClick = handleCardClick;
     this.handleDeleteButtonClick = handleDeleteButtonClick;
+    this.handleLikeButtonClick = handleLikeButtonClick;
+    this.initCard = initCard;
+    this._element = this._getTemplate();
+    this.likeButton = this._element.querySelector('.cards__like-button');
+    this.deleteButton = this._element.querySelector('.cards__delete-button');
+    this.likeButton = this._element.querySelector('.cards__like-button');
+    this.cardImage = this._element.querySelector('.cards__image');
   }
 
   generateCard() {  //собрать карточку по шаблону, добавить слушатели
-    this._element = this._getTemplate();
+    this._setEventListeners();
 
-    //this._setEventListeners();
+    this.initCard();
 
-    const cardImage = this._element.querySelector('.cards__image');
-
-    const deleteButton = this._element.querySelector('.cards__delete-button');
-    deleteButton.remove();
-
-    cardImage.src = this._link;
-    cardImage.alt = this._alt;
+    this.cardImage.src = this._link;
+    this.cardImage.alt = this._alt;
     this._element.querySelector('.cards__caption-text').textContent = this._name;
-    this._element.querySelector('.cards__caption-text').textContent = this._getLikes();
+    this._element.querySelector('.cards__like-counter').textContent = this._getLikes();
 
     return this._element;
+  }
+
+  init(options) {
+    const isMineCard = this._ownerId === options._id;
+    if (!isMineCard) {
+      this.deleteButton.remove();
+    }
+    this._likes.forEach(item => {
+      const isLiked = item._id === options._id;
+      if (isLiked) {
+        this.likeButton.classList.toggle('cards__like-button_active');
+      }
+    });
   }
 
   _getLikes() {
@@ -38,8 +56,8 @@ class Card {
     return cardElement;
   }
 
-  _likeCard(likeButton) { //поставить лайк на карточку
-    likeButton.classList.toggle('cards__like-button_active');
+  _likeCard(evt) { //поставить лайк на карточку
+    this.handleLikeButtonClick(evt);
   }
 
   _deleteCard(deleteButton) { //удалить карточку
@@ -48,20 +66,15 @@ class Card {
   }
 
   _setEventListeners() {  //добавить слушатели
-    const likeButton = this._element.querySelector('.cards__like-button');
-    const deleteButton = this._element.querySelector('.cards__delete-button');
-    const cardImage = this._element.querySelector('.cards__image');
-
-    likeButton.addEventListener('click', () => {  //на лайк
-      this._likeCard(likeButton);
+    this.likeButton.addEventListener('click', (evt) => {  //на лайк
+      this._likeCard(evt);
     });
 
-    deleteButton.addEventListener('click', (evt) => {  //на корзину
-      //this._deleteCard(deleteButton);
+    this.deleteButton.addEventListener('click', (evt) => {  //на корзину
       this.handleDeleteButtonClick(evt);
     });
 
-    cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view, действие определено при создании экземпляра
+    this.cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view, действие определено при создании экземпляра
       this.handleCardClick();
     });
   }
