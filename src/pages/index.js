@@ -7,18 +7,21 @@ import { FormValidator } from '../scripts/FormValidator.js';
 import { initialCards, options } from '../scripts/data.js';
 import './index.css';
 import { Popup } from '../scripts/Popup.js';
+import { PopupWithConfirm } from '../scripts/PopupWithConfirm.js';
 
 //--Находим блоки
 const profileElement = document.querySelector('.profile');
 const popupElementEdit = document.querySelector('.popup_type_edit');
 const popupElementAdd = document.querySelector('.popup_type_add');
 const popupElementView = document.querySelector('.popup_type_view');
+const popupElementEditAvatar = document.querySelector('.popup_type_edit-avatar');
 //--
 
 //--Элементы на странице
 const editButton = profileElement.querySelector('.profile__edit-button');
 const addButton = profileElement.querySelector('.profile__add-button');
 const editAvatarButton = profileElement.querySelector('.profile__edit-avatar-button');
+const avatarImage = profileElement.querySelector('.profile__avatar');
 //--
 
 //--Элементы формы edit
@@ -29,6 +32,7 @@ const jobInput = popupElementEdit.querySelector('.popup__input_type_job');
 //--Элементы формы add
 const titleInput = popupElementAdd.querySelector('.popup__input_type_title');
 const linkInput = popupElementAdd.querySelector('.popup__input_type_link');
+const saveCard = popupElementAdd.querySelector('.popup__save-button');
 //--
 
 //--Элементы формы view
@@ -50,38 +54,50 @@ const userInfo = new UserInfo(
 //--
 
 //--Собрать и вернуть карточку как экземпляр класса
-
-function renderCard(item) {
+function renderCard(item, userId) {
   const card = new Card(
     item,
+    userId,
     cardTemplate,
     {
       handleCardClick: () => {  //при клике на картинке открывать попап просмотра и передавать туда данные
         popupView.open(item);
       },
       handleDeleteButtonClick: (evt) => {
+        const cardButton = evt.target;
         popupDelete.open();
-
-        evt.target.closest('.cards__item').remove();
+        popupDelete.setSubmitListener(item._id, cardButton);
       },
       handleLikeButtonClick: (evt) => {
         const likeButton = evt.target;
         likeButton.classList.toggle('cards__like-button_active');
 
         const isLiked = likeButton.classList.contains('cards__like-button_active');
+
+
         if (isLiked) {
-          api.setLike(evt, item);
+          api.setLike(item)
+            .then((result) => {
+              const likesCounter = evt.target.nextElementSibling;
+              const likesQty = result.likes.length;
+              likesCounter.textContent = likesQty;
+            });
         } else {
-          api.removeLike(evt, item);
+          api.removeLike(item)
+            .then((result) => {
+              const likesCounter = evt.target.nextElementSibling;
+              const likesQty = result.likes.length;
+              likesCounter.textContent = likesQty;
+            });
         }
       },
-      initCard: () => {
-        api.initCard(card);
-      }
+      /*initCard: () => {
+        //api.initCard(card);
+        console.log(userId);
+      }*/
     }
   );
-
-  //card.init(); //??????
+  //card.showId();
 
   const cardElement = card.generateCard();
   return cardElement;
@@ -102,14 +118,43 @@ const popupEdit = new PopupWithForm(
         about: formValues['job-input']
       };
       //userInfo.setUserInfo(dataSet); //установить на странице новые значения
-      api.setUserInfo(dataSet);
-      popupEdit.close();
+      api.setUserInfo(dataSet)
+        .then((result) => {
+          userInfo.setUserInfo(result);
+        })
+        .finally(() => {
+          popupEdit.close();
+        });
     },
     clear: () => { editForm.clearInputError() }
   },
-
 );
 //--
+
+const popupEditAvatar = new PopupWithForm(
+  '.popup_type_edit-avatar',
+  '.popup__container',
+  '.popup__input',
+  {
+    handleFormSubmit: (evt, formValues) => {  //при сабмите собрать данные с полей
+      evt.preventDefault();
+
+      const dataSet = {   //собрать объект на основе данных
+        link: formValues['link-input']
+      };
+
+      api.setUserAvatar(dataSet)
+        .then((result) => {
+          avatarImage.src = result.avatar;
+        })
+        .finally(() => {
+          popupEditAvatar.close();
+        });
+    },
+    clear: () => { editAvatarForm.clearInputError() }
+  },
+
+);
 
 //--Попап с формой добавления карточки
 const popupAdd = new PopupWithForm(
@@ -126,10 +171,15 @@ const popupAdd = new PopupWithForm(
         alt: `Фото ${formValues['place-input']}`
       };
 
-      //cards.addItem(renderCard(item), 'CARD');  //добавить карточку в начало списка
-      api.addNewCard(item);
-
-      popupAdd.close();
+      saveCard.textContent = 'Сохранение...';
+      api.addNewCard(item)
+        .then((result) => {
+          const cardsSection = document.querySelector('.cards__list');
+          cardsSection.prepend(renderCard(result, userId));
+        })
+        .finally(() => {
+          popupAdd.close();
+        })
     },
     clear: () => { addForm.clearInputError() }
   });
@@ -139,10 +189,24 @@ const popupView = new PopupWithImage('.popup_type_view', captionElement, imageEl
 //--
 
 //--Попап удаления
-const popupDelete = new Popup('.popup_type_delete-card'); //сделать отдельный класс ??????
+const popupDelete = new PopupWithConfirm(
+  '.popup_type_delete-card',
+  '.popup__container',
+  {
+    handleFormSubmit: (evt, itemId, cardButton) => {
+      evt.preventDefault();
+      console.log(itemId);
+      api.deleteCard(itemId)
+        .then(() => {
+          cardButton.closest('.cards__item').remove();
+        })
+        .finally(() => {
+          popupDelete.close();
+        })
+    }
+  }
+);
 //--
-
-const popupEditAvatar = new Popup('.popup_type_edit-avatar');
 
 //--Слушатели на кнопки, для открытия попапов
 editButton.addEventListener('click', () => {
@@ -174,8 +238,10 @@ popupEditAvatar.setEventListeners();
 //--Подключить валидацию форм
 const editForm = new FormValidator(options, popupElementEdit);
 const addForm = new FormValidator(options, popupElementAdd);
+const editAvatarForm = new FormValidator(options, popupElementEditAvatar);
 editForm.enableValidation();
 addForm.enableValidation();
+editAvatarForm.enableValidation();
 //--
 
 export { popupElementView, imageElement, captionElement, popupDelete };
@@ -189,27 +255,29 @@ class Api {
     this._baseUrl = options.baseUrl;
     this._headers = options.headers;
   }
+  _handleResponse(res) {
+    if (res.ok) {
+      return res.json();
+    } else {
+      return Promise.reject(`Ошибка: ${res.status}`);
+    }
+  }
+
+  _handleResponseError(err) {
+    console.log(err)
+    return Promise.reject(err.message);
+  }
+
   getInitialCards() {
     return fetch(`${this._baseUrl}/cards`, {
       headers: this._headers,
     })
-      .then((res) => { return res.json() })
-      /*.then((result) => {
-
-        result.forEach(item => {
-          item.alt = `Фото "${item.name}" не загрузилось`;
-        });
-        const cards = new Section({
-          items: result, //массив с данными
-          renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
-            cards.addItem(renderCard(item));
-          }
-        }, '.cards__list');
-        cards.renderItems();
-        //console.log(result);
-      });*/
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
   }
-  initCard(card) {
+
+  //**********************
+  /*initCard(card) {
     fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
       headers: this._headers
@@ -218,21 +286,20 @@ class Api {
       .then(result => {
         card.init(result);
       });
-  }
+  }*/
+  //*************************
 
   getUserInfo() {
-    fetch(`${this._baseUrl}/users/me`, {
+    return fetch(`${this._baseUrl}/users/me`, {
       method: 'GET',
       headers: this._headers
     })
-      .then(res => res.json())
-      .then((result) => {
-        userInfo.setUserInfo(result);
-        //console.log(result._id)
-      });
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
   }
+
   setUserInfo({ name, about }) {
-    fetch(`${this._baseUrl}/users/me`, {
+    return fetch(`${this._baseUrl}/users/me`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
@@ -240,13 +307,24 @@ class Api {
         about: about
       })
     })
-        .then(res => res.json())
-        .then((result) => {
-          userInfo.setUserInfo(result);
-        });
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
   }
+
+  setUserAvatar({ link }) {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
+      method: 'PATCH',
+      headers: this._headers,
+      body: JSON.stringify({
+        avatar: link
+      })
+    })
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
+  }
+
   addNewCard({ name, link, alt }) {
-      fetch(`${this._baseUrl}/cards`, {
+    return fetch(`${this._baseUrl}/cards`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -255,37 +333,35 @@ class Api {
         alt: alt
       })
     })
-      .then(res => res.json())
-      .then((result) => {
-        const cardsSection = document.querySelector('.cards__list');
-        cardsSection.prepend(renderCard(result));
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
+  }
 
-        console.log(cardsSection);
-      });
-  }
-  setLike(evt, card) {
-    fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
-      method: 'PUT',
-      headers: this._headers,
-    })
-      .then(res => res.json())
-      .then((result) => {
-        const likesCounter = evt.target.nextElementSibling;
-        const likesQty = result.likes.length;
-        likesCounter.textContent = likesQty;
-      });
-  }
-  removeLike(evt, card) {
-    fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
+  deleteCard(cardId) {
+    return fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: 'DELETE',
       headers: this._headers,
     })
-      .then(res => res.json())
-      .then((result) => {
-        const likesCounter = evt.target.nextElementSibling;
-        const likesQty = result.likes.length;
-        likesCounter.textContent = likesQty;
-      });
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
+  }
+
+  setLike(card) {
+    return fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
+      method: 'PUT',
+      headers: this._headers,
+    })
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
+  }
+
+  removeLike(card) {
+    return fetch(`${this._baseUrl}/cards/likes/${card._id}`, {
+      method: 'DELETE',
+      headers: this._headers,
+    })
+      .then(this._handleResponse)
+      .catch(this._handleResponseError)
   }
 }
 
@@ -297,20 +373,27 @@ const api = new Api({
   }
 });
 
-api.getInitialCards()
-.then((result) => {
+let userId;
+api.getUserInfo()
+  .then((result) => {
+    userInfo.setUserInfo(result);
+    avatarImage.src = result.avatar;
+    userId = result._id;
+  })
+  .finally(() => {
 
-  result.forEach(item => {
-    item.alt = `Фото "${item.name}" не загрузилось`;
-  });
-  const cards = new Section({
-    items: result, //массив с данными
-    renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
-      cards.addItem(renderCard(item));
-    }
-  }, '.cards__list');
-  cards.renderItems();
-  //console.log(result);
-});
-api.getUserInfo();
+    api.getInitialCards()
+      .then((result) => {
 
+        result.forEach(item => {
+          item.alt = `Фото "${item.name}" не загрузилось`;
+        });
+        const cards = new Section({
+          items: result, //массив с данными
+          renderer: (item) => { //собрать карточку и вставить разметку в список, определённый селектором
+            cards.addItem(renderCard(item, userId));
+          }
+        }, '.cards__list');
+        cards.renderItems();
+      });
+  })

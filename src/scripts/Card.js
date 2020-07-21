@@ -1,7 +1,7 @@
 import {popupDelete} from '../pages/index.js';
 
 class Card {
-  constructor(card, template, { handleCardClick, handleDeleteButtonClick, handleLikeButtonClick, initCard }) {
+  constructor(card, userId, template, { handleCardClick, handleDeleteButtonClick, handleLikeButtonClick }) {
 
     this._name = card.name;
     this._link = card.link;
@@ -9,11 +9,12 @@ class Card {
     this._likes = card.likes;
     this._ownerId = card.owner._id;
     this._cardId = card._id;
+    this._userId = userId;
     this._template = template;
     this.handleCardClick = handleCardClick;
     this.handleDeleteButtonClick = handleDeleteButtonClick;
     this.handleLikeButtonClick = handleLikeButtonClick;
-    this.initCard = initCard;
+    //this.initCard = initCard;
     this._element = this._getTemplate();
     this.likeButton = this._element.querySelector('.cards__like-button');
     this.deleteButton = this._element.querySelector('.cards__delete-button');
@@ -24,7 +25,7 @@ class Card {
   generateCard() {  //собрать карточку по шаблону, добавить слушатели
     this._setEventListeners();
 
-    this.initCard();
+    this.showId();
 
     this.cardImage.src = this._link;
     this.cardImage.alt = this._alt;
@@ -34,7 +35,20 @@ class Card {
     return this._element;
   }
 
-  init(options) {
+  showId(){
+    const isMyCard = this._ownerId === this._userId;
+    if (!isMyCard) {
+      this.deleteButton.remove();
+    }
+    this._likes.forEach(item => {
+      const isLiked = item._id === this._userId;
+      if (isLiked) {
+        this.likeButton.classList.toggle('cards__like-button_active');
+      }
+    });
+  }
+
+  /*init(options) {
     const isMyCard = this._ownerId === options._id;
     if (!isMyCard) {
       this.deleteButton.remove();
@@ -45,7 +59,7 @@ class Card {
         this.likeButton.classList.toggle('cards__like-button_active');
       }
     });
-  }
+  }*/
 
   _getLikes() {
     return this._likes.length;
