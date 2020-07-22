@@ -70,10 +70,12 @@ function renderCard(item, userId) {
       handleCardClick: () => {  //при клике на картинке открывать попап просмотра и передавать туда данные
         popupView.open(item);
       },
-      handleDeleteButtonClick: (evt) => { //при клике на корзине открыть попап подтверждения, установить слушатель
+
+      handleDeleteButtonClick: (evt) => { //при клике на корзине открыть попап подтверждения, передать данные карточки
         const cardButton = evt.target;
         popupDelete.open();
-        popupDelete.setSubmitListener(item._id, cardButton);
+        popupDelete.pushData(item._id, cardButton);
+
       },
       handleLikeButtonClick: (evt) => {
         const likeButton = evt.target;   //на каком лайке кликнули
@@ -209,9 +211,7 @@ const popupDelete = new PopupWithConfirm(
   '.popup_type_delete-card',
   '.popup__container',
   {
-    handleFormSubmit: (evt, itemId, cardButton) => {
-      evt.preventDefault();
-
+    handleFormSubmit: (itemId, cardButton) => {
       const confirmDeleteDefaultText = confirmDelete.textContent; //заменить текст на кнопке во время запроса на сервер
       confirmDelete.textContent = 'Удаление...'
 

@@ -1,4 +1,5 @@
 import { Popup } from './Popup.js';
+import { data } from 'autoprefixer';
 
 class PopupWithConfirm extends Popup {
   constructor(popupSelector, formSelector, { handleFormSubmit }) {
@@ -16,14 +17,18 @@ class PopupWithConfirm extends Popup {
     super.close();
   }
 
-  setSubmitListener(itemId, cardButton) {
-    this._form.addEventListener('submit', (evt) => {
-      this._handleFormSubmit(evt, itemId, cardButton);
-    });
+  pushData(itemId, cardButton) {
+    this._id = itemId;
+    this._button = cardButton;
   }
 
   setEventListeners() {
     super.setEventListeners();
+    this._form.addEventListener('submit', (evt) => {
+      evt.preventDefault();
+
+      this._handleFormSubmit(this._id, this._button);
+    });
   }
 }
 
