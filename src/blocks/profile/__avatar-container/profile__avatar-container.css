@@ -7,3 +7,10 @@
   display: block;
   position: relative;
 }
+
+
+@media (max-width: 714px) {
+  .profile__avatar-container {
+    margin: 0 0 10px;
+  }
+}

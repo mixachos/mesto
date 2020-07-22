@@ -1,3 +1,6 @@
 .cards__like-counter {
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: inherit;
   margin: 0;
 }

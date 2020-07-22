@@ -1,5 +1,3 @@
-import {popupDelete} from '../pages/index.js';
-
 class Card {
   constructor(card, userId, template, { handleCardClick, handleDeleteButtonClick, handleLikeButtonClick }) {
 
@@ -14,7 +12,6 @@ class Card {
     this.handleCardClick = handleCardClick;
     this.handleDeleteButtonClick = handleDeleteButtonClick;
     this.handleLikeButtonClick = handleLikeButtonClick;
-    //this.initCard = initCard;
     this._element = this._getTemplate();
     this.likeButton = this._element.querySelector('.cards__like-button');
     this.deleteButton = this._element.querySelector('.cards__delete-button');
@@ -25,7 +22,7 @@ class Card {
   generateCard() {  //собрать карточку по шаблону, добавить слушатели
     this._setEventListeners();
 
-    this.showId();
+    this._checkId();
 
     this.cardImage.src = this._link;
     this.cardImage.alt = this._alt;
@@ -35,31 +32,18 @@ class Card {
     return this._element;
   }
 
-  showId(){
+  _checkId(){ //проверить владельца
     const isMyCard = this._ownerId === this._userId;
     if (!isMyCard) {
-      this.deleteButton.remove();
+      this.deleteButton.remove(); //убрать кнопку "удалить" с чужих карточек
     }
     this._likes.forEach(item => {
       const isLiked = item._id === this._userId;
       if (isLiked) {
-        this.likeButton.classList.toggle('cards__like-button_active');
+        this.likeButton.classList.toggle('cards__like-button_active');  //закрасить лайк на отмеченных карточках
       }
     });
   }
-
-  /*init(options) {
-    const isMyCard = this._ownerId === options._id;
-    if (!isMyCard) {
-      this.deleteButton.remove();
-    }
-    this._likes.forEach(item => {
-      const isLiked = item._id === options._id;
-      if (isLiked) {
-        this.likeButton.classList.toggle('cards__like-button_active');
-      }
-    });
-  }*/
 
   _getLikes() {
     return this._likes.length;
@@ -72,11 +56,6 @@ class Card {
 
   _likeCard(evt) { //поставить лайк на карточку
     this.handleLikeButtonClick(evt);
-  }
-
-  _deleteCard(deleteButton) { //удалить карточку
-    //popupDelete.open(); //вынести обработчик наружу
-    //deleteButton.closest('.cards__item').remove();
   }
 
   _setEventListeners() {  //добавить слушатели
