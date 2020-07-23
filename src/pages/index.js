@@ -1,12 +1,13 @@
-import { Card } from '../scripts/Card.js';
-import { Section } from '../scripts/Section.js';
-import { PopupWithImage } from '../scripts/PopupWithImage.js';
-import { PopupWithForm } from '../scripts/PopupWithForm.js';
-import { UserInfo } from '../scripts/UserInfo.js';
-import { FormValidator } from '../scripts/FormValidator.js';
-import { options } from '../scripts/data.js';
-import { PopupWithConfirm } from '../scripts/PopupWithConfirm.js';
-import { Api } from '../scripts/Api.js';
+import { Card } from '../components/Card.js';
+import { Section } from '../components/Section.js';
+import { PopupWithImage } from '../components/PopupWithImage.js';
+import { PopupWithForm } from '../components/PopupWithForm.js';
+import { UserInfo } from '../components/UserInfo.js';
+import { FormValidator } from '../components/FormValidator.js';
+import { options } from '../utils/data.js';
+import { apiConfig } from '../utils/data.js';
+import { PopupWithConfirm } from '../components/PopupWithConfirm.js';
+import { Api } from '../components/Api.js';
 import './index.css';
 
 //--Находим блоки
@@ -30,11 +31,6 @@ const nameInput = popupElementEdit.querySelector('.popup__input_type_name');
 const jobInput = popupElementEdit.querySelector('.popup__input_type_job');
 //--
 
-//--Элементы формы add
-const titleInput = popupElementAdd.querySelector('.popup__input_type_title');
-const linkInput = popupElementAdd.querySelector('.popup__input_type_link');
-//--
-
 //--Кнопки submit всех форм
 const saveCard = popupElementAdd.querySelector('.popup__save-button');
 const saveAvatar = popupElementEditAvatar.querySelector('.popup__save-button');
@@ -55,7 +51,8 @@ const cardTemplate = document.querySelector('#card-template').content;  //сод
 const userInfo = new UserInfo(
   {
     nameElement: '.profile__name',
-    jobElement: '.profile__job'
+    jobElement: '.profile__job',
+    avatarElement: '.profile__avatar'
   }
 );
 //--
@@ -75,8 +72,8 @@ function renderCard(item, userId) {
         const cardButton = evt.target;
         popupDelete.open();
         popupDelete.pushData(item._id, cardButton);
-
       },
+
       handleLikeButtonClick: (evt) => {
         const likeButton = evt.target;   //на каком лайке кликнули
         likeButton.classList.toggle('cards__like-button_active');
@@ -89,17 +86,10 @@ function renderCard(item, userId) {
           likesCounter.textContent = likesQty;
         }
 
-        if (isLiked) {
-          api.setLike(item) //запрос на сервер для постановки лайка
-            .then((result) => { //изменить количество лайков по данным с вервера
-              countLike(result);
-            });
-        } else {
-          api.removeLike(item)  //запрос для снятия лайка
-            .then((result) => {
-              countLike(result);
-            });
-        }
+        isLiked
+          ? api.setLike(item).then((result) => { countLike(result) })
+          : api.removeLike(item).then((result) => { countLike(result) });
+
       },
     }
   );
@@ -264,19 +254,12 @@ addForm.enableValidation();
 editAvatarForm.enableValidation();
 //--
 
-const api = new Api({
-  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-13',
-  headers: {
-    authorization: '5eda30f0-ae1e-4616-84ef-341ffee20b13',
-    'Content-Type': 'application/json'
-  }
-});
+const api = new Api(apiConfig);
 
 let userId;
 api.getUserInfo() //забрать инфо с сервера
   .then((result) => {
     userInfo.setUserInfo(result);
-    avatarImage.src = result.avatar;
     userId = result._id;
   })
   .finally(() => { //ждать всё, чтобы отдать userId в карточки для проверки владельца
@@ -297,4 +280,4 @@ api.getUserInfo() //забрать инфо с сервера
       });
   });
 
-  export { popupElementView, imageElement, captionElement, popupDelete };
+export { popupElementView, imageElement, captionElement, popupDelete };
