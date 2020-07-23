@@ -33,10 +33,6 @@ class Card {
     return this._element;
   }
 
-  deleteCard() {
-
-  }
-
   _checkId(){ //проверить владельца
     const isMyCard = this._ownerId === this._userId;
     if (!isMyCard) {
