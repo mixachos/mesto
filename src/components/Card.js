@@ -1,5 +1,5 @@
 class Card {
-  constructor(card, userId, template, { handleCardClick, handleDeleteButtonClick, handleLikeButtonClick }) {
+  constructor(card, userId, template, selectors, { handleCardClick, handleDeleteButtonClick, handleLikeButtonClick }) {
 
     this._name = card.name;
     this._link = card.link;
@@ -9,14 +9,15 @@ class Card {
     this._cardId = card._id;
     this._userId = userId;
     this._template = template;
+    this._selectors = selectors;
     this.handleCardClick = handleCardClick;
     this.handleDeleteButtonClick = handleDeleteButtonClick;
     this.handleLikeButtonClick = handleLikeButtonClick;
     this._element = this._getTemplate();
-    this.likeButton = this._element.querySelector('.cards__like-button');
-    this.deleteButton = this._element.querySelector('.cards__delete-button');
-    this.likeButton = this._element.querySelector('.cards__like-button');
-    this.cardImage = this._element.querySelector('.cards__image');
+    this.likeButton = this._element.querySelector(this._selectors.likeButtonSelector);
+    this.deleteButton = this._element.querySelector(this._selectors.deleteButtonSelector);
+    this.cardImage = this._element.querySelector(this._selectors.imageSelector);
+    this.likesCounter = this._element.querySelector(this._selectors.likeCounterSelector);
   }
 
   generateCard() {  //собрать карточку по шаблону, добавить слушатели
@@ -26,10 +27,14 @@ class Card {
 
     this.cardImage.src = this._link;
     this.cardImage.alt = this._alt;
-    this._element.querySelector('.cards__caption-text').textContent = this._name;
-    this._element.querySelector('.cards__like-counter').textContent = this._getLikes();
+    this._element.querySelector(this._selectors.imageCaptionSelector).textContent = this._name;
+    this.likesCounter.textContent = this._getLikes();
 
     return this._element;
+  }
+
+  deleteCard() {
+
   }
 
   _checkId(){ //проверить владельца
@@ -40,7 +45,7 @@ class Card {
     this._likes.forEach(item => {
       const isLiked = item._id === this._userId;
       if (isLiked) {
-        this.likeButton.classList.toggle('cards__like-button_active');  //закрасить лайк на отмеченных карточках
+        this.likeButton.classList.toggle(this._selectors.likeButtonStatusSelector);  //закрасить лайк на отмеченных карточках
       }
     });
   }
@@ -54,17 +59,19 @@ class Card {
     return cardElement;
   }
 
-  _likeCard(evt) { //поставить лайк на карточку
-    this.handleLikeButtonClick(evt);
+  _likeCard() { //поставить лайк на карточку
+    this.likeButton.classList.toggle(this._selectors.likeButtonStatusSelector);
+    this._isLiked = this.likeButton.classList.contains(this._selectors.likeButtonStatusSelector);
+    this.handleLikeButtonClick(this._isLiked, this.likesCounter);
   }
 
   _setEventListeners() {  //добавить слушатели
-    this.likeButton.addEventListener('click', (evt) => {  //на лайк
-      this._likeCard(evt);
+    this.likeButton.addEventListener('click', () => {  //на лайк
+      this._likeCard();
     });
 
-    this.deleteButton.addEventListener('click', (evt) => {  //на корзину
-      this.handleDeleteButtonClick(evt);
+    this.deleteButton.addEventListener('click', () => {  //на корзину
+      this.handleDeleteButtonClick(this.deleteButton);
     });
 
     this.cardImage.addEventListener('click', () => {   //на картинку для открытия попапа view, действие определено при создании экземпляра

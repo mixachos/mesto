@@ -59,31 +59,35 @@ const userInfo = new UserInfo(
 
 //--Собрать и вернуть карточку как экземпляр класса
 function renderCard(item, userId) {
+
+  const selectors = {
+    likeButtonSelector: '.cards__like-button',
+    likeCounterSelector: '.cards__like-counter',
+    deleteButtonSelector: '.cards__delete-button',
+    imageSelector: '.cards__image',
+    imageCaptionSelector: '.cards__caption-text',
+    likeButtonStatusSelector: 'cards__like-button_active'
+  }
+
   const card = new Card(
     item,
     userId,
     cardTemplate,
+    selectors,
     {
       handleCardClick: () => {  //при клике на картинке открывать попап просмотра и передавать туда данные
         popupView.open(item);
       },
 
-      handleDeleteButtonClick: (evt) => { //при клике на корзине открыть попап подтверждения, передать данные карточки
-        const cardButton = evt.target;
+      handleDeleteButtonClick: (deleteButton) => { //при клике на корзине открыть попап подтверждения, передать данные карточки
         popupDelete.open();
-        popupDelete.pushData(item._id, cardButton);
+        popupDelete.pushData(item, deleteButton);
       },
 
-      handleLikeButtonClick: (evt) => {
-        const likeButton = evt.target;   //на каком лайке кликнули
-        likeButton.classList.toggle('cards__like-button_active');
-
-        const isLiked = likeButton.classList.contains('cards__like-button_active'); //поставлен или снят лайк
+      handleLikeButtonClick: (isLiked, likesCounter) => {
 
         function countLike(result) {
-          const likesCounter = evt.target.nextElementSibling;
-          const likesQty = result.likes.length;
-          likesCounter.textContent = likesQty;
+          likesCounter.textContent = result.likes.length;
         }
 
         isLiked
@@ -201,13 +205,13 @@ const popupDelete = new PopupWithConfirm(
   '.popup_type_delete-card',
   '.popup__container',
   {
-    handleFormSubmit: (itemId, cardButton) => {
+    handleFormSubmit: (itemId, deleteButton) => {
       const confirmDeleteDefaultText = confirmDelete.textContent; //заменить текст на кнопке во время запроса на сервер
       confirmDelete.textContent = 'Удаление...'
 
       api.deleteCard(itemId) //удалить карточку с сервера
         .then(() => {
-          cardButton.closest('.cards__item').remove();  //когда придёт ОК ответ, удалить карточку из разметки
+          deleteButton.closest('.cards__item').remove();  //когда придёт ОК ответ, удалить карточку из разметки
         })
         .finally(() => {
           popupDelete.close();

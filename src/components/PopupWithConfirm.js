@@ -8,9 +8,9 @@ class PopupWithConfirm extends Popup {
     this._form = this._popup.querySelector(formSelector);
   }
 
-  pushData(itemId, cardButton) {
-    this._id = itemId;
-    this._button = cardButton;
+  pushData(item, deleteButton) {
+    this._id = item._id;
+    this._button = deleteButton;
   }
 
   setEventListeners() {
